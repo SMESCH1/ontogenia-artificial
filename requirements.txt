@@ -1,0 +1,28 @@
+# Core ML
+torch>=2.1
+transformers>=4.40
+datasets>=2.18
+accelerate>=0.28
+
+# Evaluación
+lm-eval>=0.4.2
+
+# Análisis y visualización
+numpy>=1.26
+scipy>=1.11
+pandas>=2.1
+matplotlib>=3.8
+seaborn>=0.13
+scikit-learn>=1.4
+
+# Adquisición humana
+# childespy requires R; se evalúa alternativa via API web en Semana 1
+# wordbankr idem; alternativa: descarga manual CSV de wordbank.stanford.edu
+
+# Notebooks
+jupyter>=1.0
+ipykernel>=6.29
+
+# Utilidades
+tqdm>=4.66
+pyyaml>=6.0

@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Pesos, caches y datos pesados
+models/
+checkpoints/
+*.safetensors
+*.bin
+*.pt
+
+# HuggingFace / Torch caches
+.cache/
+hf_cache/
+
+# Datos crudos (no versionar)
+data/raw/
+data/processed/
+
+# Resultados de experimentos
+results/
+wandb/
+outputs/
+
+# LaTeX build
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.bbl
+paper/*.blg
+paper/*.toc
+paper/*.synctex.gz
+paper/*.fdb_latexmk
+paper/*.fls
+
+# Sistema
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
