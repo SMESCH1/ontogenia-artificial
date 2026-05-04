@@ -1,0 +1,12 @@
+---
+description: Convenciones Python — resultados y tipos
+globs: src/**/*.py,scripts/**/*.py,tests/**/*.py
+alwaysApply: false
+---
+
+# Código Python Ontogenia
+
+- JSON de evaluación: clave `lm_eval` con el dict crudo del harness; `meta` con `pretrained`, `revision`, `tasks`, `model_size`.
+- `checkpoints.CHECKPOINT_STEPS` es la fuente de verdad del vector de 24 pasos; alinear con `docs/04_experimental_design.md`.
+- Preferir `torch.cuda.is_available()` para device por defecto en CLI; permitir override `--device cpu`.
+- Mantener dependencias alineadas con `requirements.txt` y `pyproject.toml`.
