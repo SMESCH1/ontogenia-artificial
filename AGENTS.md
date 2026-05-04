@@ -15,6 +15,8 @@
 
 Envelope común: `meta` + `lm_eval` (dict completo devuelto por `lm_eval.simple_evaluate`).
 
+Muestras por ítem (`doc`, `resps`, métricas por ejemplo): con `--samples-dir` se escribe un archivo paralelo `*_samples.json` y se elimina la clave `samples` del dict principal antes de guardar.
+
 ## No expandir el proyecto hacia
 
 Interpretabilidad mecanicista profunda, Singular Learning Theory operativa, ToM, fine-tuning masivo — salvo mención breve como trabajo futuro en el paper.

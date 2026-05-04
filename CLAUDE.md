@@ -19,15 +19,20 @@ python -m unittest discover -s tests -v               # métricas SLLN-LP
 ./scripts/run_smoke.sh --limit 20                   # Pythia × pocos steps × 1 paradigma BLiMP → results/smoke/
 ./scripts/run_full_sweep.sh                         # 3×24×blimp → results/sweep/ (muy largo; usar GPU)
 python -m ontogenia sweep --sizes 160m --steps 0,512,2000 --tasks blimp --limit 50   # contingencia
+python -m ontogenia aggregate --results-dir results --output-parquet results/aggregated_metrics.parquet
 ```
 
 **Salidas:** JSON bajo `results/` con `{ "meta": {...}, "lm_eval": <salida harness> }`. Carpeta **gitignored**.
+
+**Por ítem (oraciones del dataset, no texto generado):** BLiMP/Zorro en el harness son *scoring* de log-probs entre opciones; no hay “inferencia” de oraciones nuevas. Para guardar cada par (`sentence_good` / `sentence_bad`) y las respuestas del modelo, usar `--log-samples` (JSON grande) y/o `--samples-dir DIR` para volcar `lm_eval["samples"]` a `DIR/<stem>_samples.json` y dejar el JSON principal liviano.
+
+**Tabla de enlaces:** `docs/enlaces_herramientas.md`. **Resumen deep-research:** `docs/deep_research_highlights.md`. **Zorro:** `docs/integracion_zorro.md`.
 
 ## Lectura rápida al retomar
 
 1. `ROADMAP.md`
 2. `docs/04_experimental_design.md`
 3. `docs/05_human_alignment.md`
-4. `src/ontogenia/cli.py` (subcomandos `smoke`, `sweep`, `eval`)
+4. `src/ontogenia/cli.py` (subcomandos `smoke`, `sweep`, `eval`, `aggregate`)
 
 **Fuera de scope:** SLT/LLC agresivo, interpretabilidad de circuitos, ToM, entrenar desde cero.

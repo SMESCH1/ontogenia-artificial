@@ -1,5 +1,3 @@
-"""CLI: smoke test y evaluaciones reproducibles."""
-
 from __future__ import annotations
 
 import argparse
@@ -8,13 +6,30 @@ import os
 import sys
 from pathlib import Path
 
+from ontogenia.aggregate import aggregate_results_dir
 from ontogenia.checkpoints import (
     CHECKPOINT_STEPS,
     PYTHIA_MODEL_IDS,
     model_args_for_pythia,
     revision_for_step,
 )
-from ontogenia.harness import build_result_envelope, run_lm_eval, save_json
+from ontogenia.harness import (
+    build_result_envelope,
+    detach_lm_eval_samples,
+    run_lm_eval,
+    save_json,
+)
+
+# CLI: smoke test y evaluaciones reproducibles.
+# https://arxiv.org/abs/2304.01373
+# modelo en Hub (ej. pythia-70m / familia), buscar la tarjeta del tamaño que uses
+# (pythia-14m-deduped, etc.) para la config exacta.
+
+
+def _persist_eval_result(out_path: Path, env: dict, write_samples_to: Path | None) -> None:
+    if write_samples_to is not None:
+        detach_lm_eval_samples(env, write_samples_to)
+    save_json(out_path, env)
 
 
 def _default_device() -> str | None:
@@ -37,6 +52,7 @@ def cmd_smoke(args: argparse.Namespace) -> int:
 
     out_root = Path(args.output_dir)
     device = args.device or _default_device()
+    log_samples = bool(args.log_samples or args.samples_dir)
 
     for step in steps:
         rev = revision_for_step(step)
@@ -48,7 +64,7 @@ def cmd_smoke(args: argparse.Namespace) -> int:
             batch_size=args.batch_size,
             device=device,
             limit=args.limit,
-            log_samples=args.log_samples,
+            log_samples=log_samples,
             bootstrap_iters=0,
         )
         env = build_result_envelope(
@@ -60,8 +76,14 @@ def cmd_smoke(args: argparse.Namespace) -> int:
         )
         fname = f"{size}_step{step}_{args.task}.json"
         out_path = out_root / "smoke" / fname
-        save_json(out_path, env)
-        print(json.dumps({"saved": str(out_path.resolve())}, indent=2))
+        sidecar = None
+        if args.samples_dir:
+            sidecar = Path(args.samples_dir).expanduser() / f"{out_path.stem}_samples.json"
+        _persist_eval_result(out_path, env, sidecar)
+        out_msg = {"saved": str(out_path.resolve())}
+        if sidecar and sidecar.exists():
+            out_msg["samples"] = str(sidecar.resolve())
+        print(json.dumps(out_msg, indent=2))
 
     return 0
 
@@ -81,6 +103,7 @@ def cmd_sweep(args: argparse.Namespace) -> int:
 
     out_root = Path(args.output_dir)
     device = args.device or _default_device()
+    log_samples = bool(args.log_samples or args.samples_dir)
 
     for size in sizes:
         if size not in PYTHIA_MODEL_IDS:
@@ -97,7 +120,7 @@ def cmd_sweep(args: argparse.Namespace) -> int:
                 batch_size=args.batch_size,
                 device=device,
                 limit=args.limit,
-                log_samples=args.log_samples,
+                log_samples=log_samples,
                 bootstrap_iters=args.bootstrap_iters,
             )
             env = build_result_envelope(
@@ -109,8 +132,13 @@ def cmd_sweep(args: argparse.Namespace) -> int:
             )
             fname = f"{size}_{rev}.json"
             out_path = out_root / "sweep" / fname
-            save_json(out_path, env)
+            sidecar = None
+            if args.samples_dir:
+                sidecar = Path(args.samples_dir).expanduser() / f"{out_path.stem}_samples.json"
+            _persist_eval_result(out_path, env, sidecar)
             msg = {"saved": str(out_path.resolve()), "size": size, "step": step}
+            if sidecar and sidecar.exists():
+                msg["samples"] = str(sidecar.resolve())
             print(json.dumps(msg, indent=2))
 
     return 0
@@ -120,13 +148,14 @@ def cmd_eval(args: argparse.Namespace) -> int:
     """Una corrida genérica (para scripts de sweep)."""
     tasks = [t.strip() for t in args.tasks.split(",") if t.strip()]
     device = args.device or _default_device()
+    log_samples = bool(args.log_samples or args.samples_dir)
     raw = run_lm_eval(
         model_args=args.model_args,
         tasks=tasks,
         batch_size=args.batch_size,
         device=device,
         limit=args.limit,
-        log_samples=args.log_samples,
+        log_samples=log_samples,
         bootstrap_iters=args.bootstrap_iters,
     )
     meta = json.loads(args.meta_json) if args.meta_json else {}
@@ -134,8 +163,31 @@ def cmd_eval(args: argparse.Namespace) -> int:
         "meta": meta,
         "lm_eval": raw,
     }
-    save_json(Path(args.output_path), out)
-    print(json.dumps({"saved": args.output_path}, indent=2))
+    out_path = Path(args.output_path)
+    sidecar = None
+    if args.samples_dir:
+        sidecar = Path(args.samples_dir).expanduser() / f"{out_path.stem}_samples.json"
+    _persist_eval_result(out_path, out, sidecar)
+    msg = {"saved": str(out_path.resolve())}
+    if sidecar and sidecar.exists():
+        msg["samples"] = str(sidecar.resolve())
+    print(json.dumps(msg, indent=2))
+    return 0
+
+
+def cmd_aggregate(args: argparse.Namespace) -> int:
+    if args.sweep_only and args.smoke_only:
+        print("error: no usar --sweep-only y --smoke-only juntos", file=sys.stderr)
+        return 2
+    root = Path(args.results_dir)
+    out = Path(args.output_parquet)
+    aggregate_results_dir(
+        root,
+        out_parquet=out,
+        include_smoke=args.smoke_only or not args.sweep_only,
+        include_sweep=args.sweep_only or not args.smoke_only,
+    )
+    print(json.dumps({"saved": str(out.resolve()), "rows_hint": "see parquet"}, indent=2))
     return 0
 
 
@@ -159,7 +211,23 @@ def build_parser() -> argparse.ArgumentParser:
     ps.add_argument("--batch-size", default="auto")
     ps.add_argument("--dtype", default="float16")
     ps.add_argument("--device", default=None)
-    ps.add_argument("--log-samples", action="store_true")
+    ps.add_argument(
+        "--log-samples",
+        action="store_true",
+        help=(
+            "Incluye por-ítem en lm-eval (doc, resps, sentence_good/bad en BLiMP); "
+            "JSON mucho más grande"
+        ),
+    )
+    ps.add_argument(
+        "--samples-dir",
+        default=None,
+        metavar="DIR",
+        help=(
+            "Activa log-samples; guarda lm_eval['samples'] en "
+            "DIR/<stem>_samples.json y los quita del JSON principal"
+        ),
+    )
     ps.add_argument("--output-dir", default="results", help="Raíz de resultados (gitignored)")
 
     pe = sub.add_parser("eval", help="Evaluación genérica (model_args explícito)")
@@ -170,6 +238,12 @@ def build_parser() -> argparse.ArgumentParser:
     pe.add_argument("--batch-size", default="auto")
     pe.add_argument("--device", default=None)
     pe.add_argument("--log-samples", action="store_true")
+    pe.add_argument(
+        "--samples-dir",
+        default=None,
+        metavar="DIR",
+        help="Igual que en smoke: sidecar con muestras por ítem",
+    )
     pe.add_argument("--bootstrap-iters", type=int, default=0)
     pe.add_argument("--meta-json", default=None, help='JSON extra para envelope meta, ej. "{}"')
 
@@ -197,8 +271,35 @@ def build_parser() -> argparse.ArgumentParser:
     pw.add_argument("--dtype", default="float16")
     pw.add_argument("--device", default=None)
     pw.add_argument("--log-samples", action="store_true")
+    pw.add_argument(
+        "--samples-dir",
+        default=None,
+        metavar="DIR",
+        help="Sidecar *_samples.json por corrida (recomendado en sweep grande)",
+    )
     pw.add_argument("--bootstrap-iters", type=int, default=0)
     pw.add_argument("--output-dir", default="results")
+
+    pa = sub.add_parser(
+        "aggregate",
+        help="Consolidar métricas agregadas de JSON en results/ → Parquet",
+    )
+    pa.add_argument("--results-dir", default="results", help="Raíz que contiene sweep/ y smoke/")
+    pa.add_argument(
+        "--output-parquet",
+        default="results/aggregated_metrics.parquet",
+        help="Ruta del Parquet de salida",
+    )
+    pa.add_argument(
+        "--sweep-only",
+        action="store_true",
+        help="Sólo leer results/sweep/",
+    )
+    pa.add_argument(
+        "--smoke-only",
+        action="store_true",
+        help="Sólo leer results/smoke/",
+    )
 
     return p
 
@@ -214,6 +315,8 @@ def main() -> None:
         raise SystemExit(cmd_eval(args))
     if args.command == "sweep":
         raise SystemExit(cmd_sweep(args))
+    if args.command == "aggregate":
+        raise SystemExit(cmd_aggregate(args))
     raise SystemExit(2)
 
 

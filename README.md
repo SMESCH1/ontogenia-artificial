@@ -17,7 +17,7 @@ Research Project para la materia **Procesamiento de Lenguaje Natural** (UDESA, 1
 
 ## Estado
 
-**Semana 2 en curso** — pipeline `lm-eval` + CLI (`ontogenia smoke|sweep|eval`), métricas SLLN-LP, scripts `scripts/run_smoke.sh` y `scripts/run_full_sweep.sh`. Ver [`CLAUDE.md`](CLAUDE.md) para retomar sesiones.
+**Semana 2 en curso** — pipeline `lm-eval` + CLI (`ontogenia smoke|sweep|eval|aggregate`), métricas SLLN-LP, opción `--samples-dir` para guardar por-ítem (`*_samples.json`), consolidación `ontogenia aggregate` → Parquet. Scripts `scripts/run_smoke.sh` y `scripts/run_full_sweep.sh`. Ver [`CLAUDE.md`](CLAUDE.md) y [`docs/enlaces_herramientas.md`](docs/enlaces_herramientas.md).
 
 Ver [`docs/`](docs/) para el marco teórico, el diseño experimental y el plan semanal.
 

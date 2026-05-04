@@ -65,3 +65,18 @@ def save_json(path: Path, data: Any) -> None:
     # second line: ensure file ends with newline
     with path.open("a", encoding="utf-8") as f:
         f.write("\n")
+
+
+def detach_lm_eval_samples(envelope: dict[str, Any], sidecar: Path) -> None:
+    """
+    Si `envelope['lm_eval']` contiene la clave `samples` (p. ej. `log_samples=True` en lm-eval),
+    escribe ese dict en `sidecar` y lo elimina del envelope para aligerar el JSON principal.
+    """
+    lm = envelope.get("lm_eval")
+    if not isinstance(lm, dict) or "samples" not in lm:
+        return
+    samples = lm.pop("samples")
+    sidecar.parent.mkdir(parents=True, exist_ok=True)
+    with sidecar.open("w", encoding="utf-8") as f:
+        json.dump(samples, f, indent=2, default=handle_non_serializable, ensure_ascii=False)
+        f.write("\n")

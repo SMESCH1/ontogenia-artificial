@@ -47,3 +47,11 @@ Thumbs.db
 *.swp
 .idea/
 .vscode/
+
+
+
+.cursor/
+.claude/
+CLAUDE.md
+AGENTS.mdnotas.txt
+notas.txt

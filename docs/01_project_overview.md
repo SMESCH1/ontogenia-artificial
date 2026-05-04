@@ -65,4 +65,7 @@ Tres predicciones falsables (detalle y métricas en `04_experimental_design.md`)
 | `04_experimental_design.md` | Operacionalización de H1/H2/H3, métricas, análisis estadístico. |
 | `05_human_alignment.md` | Fuente de AoA y tabla de mapeo paradigma ↔ hito infantil. |
 | `deep-research.md` | Informe de deep research con SoTA completo y bibliografía. |
+| `deep_research_highlights.md` | Resumen ejecutivo del deep-research para el equipo. |
+| `enlaces_herramientas.md` | Tabla de enlaces a docs oficiales (Pythia, harness, BLiMP, Wordbank, …). |
+| `integracion_zorro.md` | Cómo integrar Zorro cuando no esté en lm-eval por defecto. |
 | `papers/` | Notas de lectura por paper crítico. |
