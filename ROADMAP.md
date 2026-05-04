@@ -44,19 +44,22 @@ Detalle operacional en [`docs/04_experimental_design.md`](docs/04_experimental_d
 - [ ] Descarga del snapshot CSV de Wordbank (inglés) a `data/raw/`.
 
 ### Semana 2 (28/04 – 04/05) — Pipeline mínimo funcional
-- [ ] `src/ontogenia/checkpoints.py`: iterador sobre `revision=stepN` con cache local.
-- [ ] Integrar `lm-evaluation-harness` + task YAML para 1 paradigma de Zorro/BLiMP (ej. *subject-verb agreement*).
-- [ ] **Smoke test:** Pythia-14m × 5 checkpoints × 1 tarea → JSON + plot de trayectoria.
-- [ ] `src/ontogenia/metrics.py`: implementar SLLN-LP y validar numéricamente contra un caso de ZhoBLiMP.
-- [ ] Decisión final del vector de checkpoints (24 propuestos).
-- [ ] Pre-descarga nocturna de todos los checkpoints necesarios.
+- [x] `src/ontogenia/checkpoints.py` — vector de 24 `stepN`, `model_args` HuggingFace, `iter_checkpoint_triplets`.
+- [x] Integrar **`lm-evaluation-harness`** + tarea BLiMP vía CLI (`ontogenia smoke|sweep|eval`); Zorro: guía en [`docs/integracion_zorro.md`](docs/integracion_zorro.md) (YAML / BabyLM pipeline — pendiente de portar).
+- [x] **Smoke test** — JSON bajo `results/smoke/` (corrida local: `pythia-14m-deduped` @ `step2000`, `blimp_anaphor_number_agreement`, **acc = 0.75** sobre **20/1000** ítems, `cuda:0`, batch auto → 64). Plot de trayectoria: pendiente en notebook.
+- [x] `src/ontogenia/metrics.py` — SLLN-LP + tests unitarios; **validación numérica vs cifra publicada ZhoBLiMP** sigue opcional (sanity del paper).
+- [x] Vector de checkpoints — **24 pasos** alineados con `04_experimental_design.md` (código + docs).
+- [x] Post-proceso mínimo — `ontogenia aggregate` → `results/aggregated_metrics.parquet`; opción `--samples-dir` para sidecar `*_samples.json` (por ítem).
+- [ ] Pre-descarga nocturna de todos los checkpoints necesarios (HF cache; según espacio en disco).
 
 ### Semana 3 (05/05 – 11/05) — Corrida completa
-- [ ] Sweep Pythia-14m/160m/410m × 24 checkpoints × BLiMP + Zorro (~80 paradigmas).
-- [ ] `results/` con naming estandarizado.
-- [ ] `notebooks/02_trajectories.ipynb` con plots por paradigma + fit polinomio grado 5.
+- [ ] Sweep Pythia-14m/160m/410m × 24 checkpoints × **BLiMP** (`ontogenia sweep --tasks blimp`) + Zorro cuando esté integrado (~80 paradigmas).
+- [x] `results/` con naming — `smoke/{size}_step{N}_{task}.json`, `sweep/{size}_step{N}.json` (ver `CLAUDE.md` / `AGENTS.md`).
+- [ ] `notebooks/02_trajectories.ipynb` — plots por paradigma + fit polinomio grado 5 (esqueleto listo; falta cargar Parquet/JSON reales).
 - [ ] Clasificación topológica: monótona / U / U invertida / oscilatoria.
 - [ ] Buffer para re-correr ante artefactos.
+
+**Estimación de tiempo (orden de magnitud):** el diseño en `04_experimental_design.md` asume **≲24 h por modelo** en 3090/4090 para el sweep BLiMP completo (3 tamaños × 24 checkpoints × grupo `blimp`). En la práctica depende de GPU, drivers y caché HF; conviene **cronometrar una** corrida `14m` × `step0` × `blimp` sin `--limit` y extrapolar ×72.
 
 ### Semana 4 (12/05 – 18/05) — Análisis + escritura
 - [ ] `notebooks/03_human_correlation.ipynb`: join Pythia (step de estabilización) ↔ humano (AoA). Spearman con bootstrap.
@@ -88,10 +91,12 @@ El peor caso sigue siendo un experimento publicable con una pregunta clara.
 | --- | --- |
 | [`docs/`](docs/) | Marco teórico, diseño experimental, notas de papers. |
 | [`paper/`](paper/) | Plantilla ACL + `main.tex` del manuscrito (español). |
-| `src/ontogenia/` | Código del pipeline (Semanas 2–3). |
-| `configs/` | YAMLs de tareas custom para lm-evaluation-harness. |
-| `notebooks/` | Análisis y visualización. |
-| `scripts/` | Orquestación del sweep. |
+| `src/ontogenia/` | Pipeline: `cli` (smoke / sweep / eval / **aggregate**), `checkpoints`, `metrics`, `harness`, `aggregate`. |
+| [`CLAUDE.md`](CLAUDE.md), [`AGENTS.md`](AGENTS.md) | Handoff, convenciones `results/`, `--samples-dir`. |
+| [`docs/enlaces_herramientas.md`](docs/enlaces_herramientas.md), [`docs/deep_research_highlights.md`](docs/deep_research_highlights.md), [`docs/integracion_zorro.md`](docs/integracion_zorro.md) | Enlaces, resumen SoTA, plan Zorro. |
+| `configs/` | Placeholder para YAMLs custom (Zorro u otras tareas). |
+| `notebooks/` | `02_trajectories`, `03_human_correlation` (esqueleto + nota Parquet). |
+| `scripts/` | `run_smoke.sh`, `run_full_sweep.sh`. |
 | `data/` | Datasets crudos (gitignored) + `human_milestones.csv`. |
 | `results/` | JSONs de evaluación (gitignored). |
 
