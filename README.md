@@ -17,7 +17,7 @@ Research Project para la materia **Procesamiento de Lenguaje Natural** (UDESA, 1
 
 ## Estado
 
-**Semana 2 en curso** — pipeline `lm-eval` + CLI (`ontogenia smoke|sweep|eval|aggregate`), métricas SLLN-LP, opción `--samples-dir` para guardar por-ítem (`*_samples.json`), consolidación `ontogenia aggregate` → Parquet. Scripts `scripts/run_smoke.sh` y `scripts/run_full_sweep.sh`. Ver [`CLAUDE.md`](CLAUDE.md) y [`docs/enlaces_herramientas.md`](docs/enlaces_herramientas.md).
+**Semanas 2–4 implementadas a nivel de pipeline/análisis** — CLI (`ontogenia smoke|sweep|eval|aggregate|prefetch|topology|human-alignment`), métricas SLLN-LP, sidecars por-ítem (`--samples-dir`), consolidación Parquet, clasificación topológica y correlación humana (Spearman + bootstrap). Lo pendiente principal es correr el sweep completo y redactar resultados finales.
 
 Ver [`docs/`](docs/) para el marco teórico, el diseño experimental y el plan semanal.
 
@@ -30,11 +30,14 @@ paper/          Manuscrito LaTeX (formato ACL, español)
 src/ontogenia/  Pipeline lm-eval, checkpoints Pythia, SLLN-LP
 configs/        YAMLs de tareas custom (p. ej. Zorro) cuando se integren
 notebooks/      Trayectorias y correlación humano–modelo
-scripts/        run_smoke.sh, run_full_sweep.sh
+scripts/        run_smoke.sh, run_full_sweep.sh, prefetch_checkpoints.sh
 tests/          Tests unitarios (métricas)
 data/           Datasets humanos curados (gitignored en /raw y /processed)
 results/        JSONs de evaluación por (modelo, checkpoint) (gitignored)
 ```
+
+Para la fase de alineación humana, crear `data/human_milestones.csv` a partir de
+`data/human_milestones.csv.example` (columnas mínimas: `task`, `aoa_months`).
 
 ## Deadline
 

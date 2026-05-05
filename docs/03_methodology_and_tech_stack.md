@@ -21,7 +21,7 @@ Pythia es una familia de **transformers causales** (solo decodificador), en la l
 1. Para cada (modelo_tamaño, checkpoint_step):
    a. Cargar pesos vía HuggingFace revision=step{N}.
    b. Correr BLiMP + Zorro con lm-evaluation-harness (zero-shot, sin decoding).
-   c. Guardar JSON agregado por tarea en `results/sweep/` (y opcionalmente **muestras por ítem** con `--log-samples` y/o `--write-samples-to`; ver `CLAUDE.md`).
+   c. Guardar JSON agregado por tarea en `results/sweep/` (y opcionalmente **muestras por ítem** con `--log-samples` y/o `--samples-dir`; ver `CLAUDE.md`).
    d. Liberar VRAM.
 2. Post-proceso: calcular SLLN-LP, accuracy por paradigma, y persistir en
    results/aggregated.parquet.
@@ -68,11 +68,14 @@ Pythia es una familia de **transformers causales** (solo decodificador), en la l
 
 ```
 src/ontogenia/
-├── checkpoints.py   # vector de steps y model_args para HuggingFace
-├── metrics.py         # SLLN-LP, margen en pares
-├── harness.py         # simple_evaluate + guardado JSON
-├── cli.py             # smoke | sweep | eval | aggregate
-└── aggregate.py       # consolidar métricas de results/ → parquet (pendiente: topology, human_alignment)
+├── checkpoints.py      # vector de steps y model_args para HuggingFace
+├── metrics.py          # SLLN-LP, margen en pares
+├── harness.py          # simple_evaluate + guardado JSON
+├── aggregate.py        # consolidar métricas y muestras por-ítem → parquet
+├── topology.py         # clasificación topológica (monótona/U/invertida/oscilatoria)
+├── human_alignment.py  # step de estabilización + Spearman + bootstrap
+├── prefetch.py         # pre-descarga de checkpoints al cache HF
+└── cli.py              # smoke | sweep | eval | aggregate | prefetch | topology | human-alignment
 ```
 
 Los **notebooks** en `notebooks/` no llevan lógica pesada: importan de `src/ontogenia/` y producen figuras.

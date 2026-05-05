@@ -1,0 +1,5 @@
+task,aoa_months,source,notes
+blimp_anaphor_number_agreement,30,wordbank/example,"placeholder; reemplazar por valor validado"
+blimp_irregular_plural_subject_verb_agreement_1,36,wordbank/example,"placeholder; mapeo a irregular plural"
+blimp_irregular_past_participle_verbs,40,wordbank/example,"placeholder; mapeo a morfología irregular"
+

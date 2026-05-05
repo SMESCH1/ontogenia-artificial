@@ -18,8 +18,13 @@ pip install -r requirements.txt && pip install -e .
 python -m unittest discover -s tests -v               # métricas SLLN-LP
 ./scripts/run_smoke.sh --limit 20                   # Pythia × pocos steps × 1 paradigma BLiMP → results/smoke/
 ./scripts/run_full_sweep.sh                         # 3×24×blimp → results/sweep/ (muy largo; usar GPU)
+./scripts/prefetch_checkpoints.sh --sizes 14m,160m,410m --steps default
+./scripts/run_post_analysis.sh                     # aggregate + topology + human-alignment (si hay CSV AoA)
 python -m ontogenia sweep --sizes 160m --steps 0,512,2000 --tasks blimp --limit 50   # contingencia
 python -m ontogenia aggregate --results-dir results --output-parquet results/aggregated_metrics.parquet
+python -m ontogenia prefetch --sizes 14m,160m,410m --steps default
+python -m ontogenia topology --metrics-parquet results/aggregated_metrics.parquet --output-parquet results/topology_summary.parquet
+python -m ontogenia human-alignment --metrics-parquet results/aggregated_metrics.parquet --aoa-csv data/human_milestones.csv --model-size 160m
 ```
 
 **Salidas:** JSON bajo `results/` con `{ "meta": {...}, "lm_eval": <salida harness> }`. Carpeta **gitignored**.
@@ -33,6 +38,6 @@ python -m ontogenia aggregate --results-dir results --output-parquet results/agg
 1. `ROADMAP.md`
 2. `docs/04_experimental_design.md`
 3. `docs/05_human_alignment.md`
-4. `src/ontogenia/cli.py` (subcomandos `smoke`, `sweep`, `eval`, `aggregate`)
+4. `src/ontogenia/cli.py` (subcomandos `smoke`, `sweep`, `eval`, `aggregate`, `prefetch`, `topology`, `human-alignment`)
 
 **Fuera de scope:** SLT/LLC agresivo, interpretabilidad de circuitos, ToM, entrenar desde cero.

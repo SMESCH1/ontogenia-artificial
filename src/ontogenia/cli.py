@@ -6,7 +6,9 @@ import os
 import sys
 from pathlib import Path
 
-from ontogenia.aggregate import aggregate_results_dir
+import pandas as pd
+
+from ontogenia.aggregate import aggregate_results_dir, aggregate_samples_dir
 from ontogenia.checkpoints import (
     CHECKPOINT_STEPS,
     PYTHIA_MODEL_IDS,
@@ -19,6 +21,9 @@ from ontogenia.harness import (
     run_lm_eval,
     save_json,
 )
+from ontogenia.human_alignment import run_human_alignment
+from ontogenia.prefetch import prefetch_checkpoints
+from ontogenia.topology import classify_all_tasks
 
 # CLI: smoke test y evaluaciones reproducibles.
 # https://arxiv.org/abs/2304.01373
@@ -191,6 +196,77 @@ def cmd_aggregate(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_prefetch(args: argparse.Namespace) -> int:
+    sizes = [x.strip() for x in args.sizes.split(",") if x.strip()]
+    if args.steps == "default":
+        steps = list(CHECKPOINT_STEPS)
+    else:
+        steps = [int(x.strip()) for x in args.steps.split(",") if x.strip()]
+    results = prefetch_checkpoints(sizes=sizes, steps=steps, cache_dir=args.cache_dir)
+    failed = [r for r in results if not r.ok]
+    msg = {
+        "total": len(results),
+        "ok": len(results) - len(failed),
+        "failed": len(failed),
+    }
+    if failed:
+        msg["first_error"] = {
+            "model_size": failed[0].model_size,
+            "revision": failed[0].revision,
+            "error": failed[0].error,
+        }
+    print(json.dumps(msg, indent=2))
+    return 1 if failed else 0
+
+
+def cmd_topology(args: argparse.Namespace) -> int:
+    frame = pd.read_parquet(args.metrics_parquet)
+    summary = classify_all_tasks(frame, metric_col=args.metric_col)
+    out = Path(args.output_parquet)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    summary.to_parquet(out, index=False)
+    print(
+        json.dumps(
+            {
+                "saved": str(out.resolve()),
+                "rows": int(len(summary)),
+                "shapes": summary["shape"].value_counts(dropna=False).to_dict(),
+            },
+            indent=2,
+        )
+    )
+    return 0
+
+
+def cmd_human_alignment(args: argparse.Namespace) -> int:
+    result = run_human_alignment(
+        metrics_parquet=args.metrics_parquet,
+        aoa_csv=args.aoa_csv,
+        metric_col=args.metric_col,
+        target_model_size=args.model_size,
+        aoa_task_col=args.aoa_task_col,
+        aoa_months_col=args.aoa_months_col,
+        n_boot=args.bootstrap_iters,
+    )
+    stats_out = Path(args.output_stats_json)
+    overlap_out = Path(args.output_overlap_parquet)
+    stats_out.parent.mkdir(parents=True, exist_ok=True)
+    overlap_out.parent.mkdir(parents=True, exist_ok=True)
+    stats_out.write_text(result.stats.to_json(orient="records", indent=2), encoding="utf-8")
+    result.overlap.to_parquet(overlap_out, index=False)
+    print(
+        json.dumps(
+            {
+                "stats": str(stats_out.resolve()),
+                "overlap": str(overlap_out.resolve()),
+                "n_overlap": int(len(result.overlap)),
+            },
+            indent=2,
+        )
+    )
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="ontogenia", description="Pipeline Ontogenia / lm-eval")
     sub = p.add_subparsers(dest="command", required=True)
@@ -300,6 +376,72 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Sólo leer results/smoke/",
     )
+    pa.add_argument(
+        "--samples-dir",
+        default=None,
+        metavar="DIR",
+        help="Si se indica, agrega `*_samples.json` y escribe `--output-samples-parquet`",
+    )
+    pa.add_argument(
+        "--output-samples-parquet",
+        default="results/aggregated_samples.parquet",
+        help="Parquet por-ítem con margen SLLN (requiere --samples-dir)",
+    )
+    pa.add_argument(
+        "--slln-alpha",
+        type=float,
+        default=0.5,
+        help="Alpha para margen SLLN en agregación por-ítem",
+    )
+
+    pp = sub.add_parser(
+        "prefetch",
+        help="Pre-descarga checkpoints Pythia al cache local de HuggingFace",
+    )
+    pp.add_argument("--sizes", default="14m,160m,410m")
+    pp.add_argument(
+        "--steps",
+        default="default",
+        help='"default" = 24 pasos; o lista explícita, ej. 0,512,2000',
+    )
+    pp.add_argument("--cache-dir", default=None)
+
+    pt = sub.add_parser(
+        "topology",
+        help="Clasifica topología por tarea desde aggregated_metrics.parquet",
+    )
+    pt.add_argument(
+        "--metrics-parquet",
+        default="results/aggregated_metrics.parquet",
+    )
+    pt.add_argument("--metric-col", default="acc,none")
+    pt.add_argument(
+        "--output-parquet",
+        default="results/topology_summary.parquet",
+    )
+
+    ph = sub.add_parser(
+        "human-alignment",
+        help="Calcula Spearman step_estabilización vs AoA (Wordbank)",
+    )
+    ph.add_argument(
+        "--metrics-parquet",
+        default="results/aggregated_metrics.parquet",
+    )
+    ph.add_argument("--aoa-csv", default="data/human_milestones.csv")
+    ph.add_argument("--metric-col", default="acc,none")
+    ph.add_argument("--model-size", default="160m")
+    ph.add_argument("--aoa-task-col", default="task")
+    ph.add_argument("--aoa-months-col", default="aoa_months")
+    ph.add_argument("--bootstrap-iters", type=int, default=10000)
+    ph.add_argument(
+        "--output-stats-json",
+        default="results/human_alignment_stats.json",
+    )
+    ph.add_argument(
+        "--output-overlap-parquet",
+        default="results/human_alignment_overlap.parquet",
+    )
 
     return p
 
@@ -316,7 +458,29 @@ def main() -> None:
     if args.command == "sweep":
         raise SystemExit(cmd_sweep(args))
     if args.command == "aggregate":
-        raise SystemExit(cmd_aggregate(args))
+        code = cmd_aggregate(args)
+        if code == 0 and args.samples_dir:
+            aggregate_samples_dir(
+                results_root=Path(args.results_dir),
+                samples_dir=Path(args.samples_dir),
+                out_parquet=Path(args.output_samples_parquet),
+                include_smoke=args.smoke_only or not args.sweep_only,
+                include_sweep=args.sweep_only or not args.smoke_only,
+                alpha=args.slln_alpha,
+            )
+            print(
+                json.dumps(
+                    {"saved_samples": str(Path(args.output_samples_parquet).resolve())},
+                    indent=2,
+                )
+            )
+        raise SystemExit(code)
+    if args.command == "prefetch":
+        raise SystemExit(cmd_prefetch(args))
+    if args.command == "topology":
+        raise SystemExit(cmd_topology(args))
+    if args.command == "human-alignment":
+        raise SystemExit(cmd_human_alignment(args))
     raise SystemExit(2)
 
 
