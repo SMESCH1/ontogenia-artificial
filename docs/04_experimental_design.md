@@ -22,6 +22,12 @@
 
 ### H1 — Existencia de curvas no monótonas
 
+> **En concreto:** una curva no monótona es aquella en la que la accuracy de un paradigma
+> *baja* durante el entrenamiento y luego *sube* (curva en U), o sube y luego baja
+> (U invertida). Es decir: el modelo no mejora linealmente — empeora primero en ese
+> fenómeno antes de dominarlo. Ver `02_theoretical_framework.md §2` para la explicación
+> del mecanismo.
+
 **Definición operacional.** Para cada paradigma `p` y modelo `m`, se computa la serie temporal $a_p(t)$ = accuracy del paradigma p en el checkpoint t. Se ajusta un polinomio de grado 5 a $a_p(t)$ sobre el eje log-tokens (siguiendo Bunzeck & Zarrieß 2024). El paradigma se clasifica como:
 
 - **No monótono** si: existen puntos $t_1 < t_2 < t_3$ tales que $a_p(t_1) < a_p(t_2) - 0.05$ y $a_p(t_2) - a_p(t_3) \geq 0.05$ (curva U invertida), o simétricamente para curva en U.
@@ -43,6 +49,12 @@
 **Intervalos de confianza.** Bootstrap no paramétrico con 10 000 remuestreos.
 
 ### H3 — Excepciones morfológicas más propensas a U
+
+> **En concreto:** cuando el modelo aprende la regla general del pasado (*-ed*),
+> la sobreaplica a verbos irregulares (*goed*, *wented*). Eso *no* ocurre con
+> paradigmas puramente estructurales (p. ej. acuerdo sujeto-verbo en oraciones
+> simples), donde aprender la regla no pisa excepciones previas. La hipótesis
+> es que las U son más profundas exactamente donde hay excepciones que destruir.
 
 **Definición operacional.** Se parte la muestra de paradigmas en dos grupos:
 - **Grupo M (morfológico-irregular):** paradigmas que involucran excepciones morfológicas (p. ej. `irregular_past_tense`, `irregular_plural_subject_verb_agreement`).
