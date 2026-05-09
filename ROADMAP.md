@@ -72,6 +72,34 @@ Detalle operacional en [`docs/04_experimental_design.md`](docs/04_experimental_d
 - [ ] Tag `v1.0-presentacion` el 25/05.
 - [ ] **26/05: presentación.**
 
+## Análisis representacional vía SAEs (deseable, no priorizado)
+
+> Abordar sólo si el sweep conductual (Semana 3) termina con margen. Estimación: ~10h.
+> Documentación completa: [`docs/06_sae_representational_probes.md`](docs/06_sae_representational_probes.md).
+> Scaffold de código: [`src/ontogenia/sae_probes.py`](src/ontogenia/sae_probes.py).
+
+Motivación: los SAEs permiten preguntar si los features internos de Pythia asociados
+a un paradigma sintáctico permanecen activos durante el valle de la curva-U, aunque el
+comportamiento externo (BLiMP accuracy) baje. Esto operacionaliza la distinción
+competencia/performance en el espacio de representaciones.
+
+EleutherAI publicó SAEs pre-entrenados para Pythia-70m, 160m y 410m (deduped)
+en HuggingFace (`EleutherAI/sae-pythia-*`). Se instalan con `pip install sparsify`.
+
+**Limitación a reportar:** los SAEs están entrenados sobre el checkpoint *final*;
+proyectar checkpoints intermedios es una aproximación.
+
+**Hipótesis adicional (H4):** durante el valle de la curva-U conductual, los features
+SAE sintácticos no decrecen — evidencia de disociación competencia/performance.
+
+Fases:
+- **Fase 0** (~1-2h): identificar features sintácticos en el checkpoint final con `contrastive_features()`.
+- **Fase 1** (~3-6h GPU): sweep longitudinal con `track_features_across_checkpoints()`.
+- **Fase 2** (~1h): plot conductual vs. representacional superpuestos.
+
+Referente metodológico: Kharazi et al. (2025) "The Birth of Knowledge"
+(arxiv 2505.19440) — mismo enfoque para features semánticos en Pythia-12B.
+
 ## Plan de contingencia
 
 Si en Semana 3 el sweep completo no es viable, degradamos **en este orden**:

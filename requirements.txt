@@ -23,6 +23,9 @@ scikit-learn>=1.4
 jupyter>=1.0
 ipykernel>=6.29
 
+# Análisis representacional via SAEs (deseable — ver docs/06_sae_representational_probes.md)
+# sparsify  # pip install sparsify  (EleutherAI; descomentar si se implementa H4)
+
 # Utilidades
 tqdm>=4.66
 pyyaml>=6.0
