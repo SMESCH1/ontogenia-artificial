@@ -17,7 +17,7 @@ Research Project para la materia **Procesamiento de Lenguaje Natural** (UDESA, 1
 
 ## Estado
 
-🚧 **Semana 1 de 5** — research + scaffolding. Aún sin código ejecutable.
+**Semanas 2–4 implementadas a nivel de pipeline/análisis** — CLI (`ontogenia smoke|sweep|eval|aggregate|prefetch|topology|human-alignment`), métricas SLLN-LP, sidecars por-ítem (`--samples-dir`), consolidación Parquet, clasificación topológica y correlación humana (Spearman + bootstrap). Lo pendiente principal es correr el sweep completo y redactar resultados finales.
 
 Ver [`docs/`](docs/) para el marco teórico, el diseño experimental y el plan semanal.
 
@@ -25,14 +25,19 @@ Ver [`docs/`](docs/) para el marco teórico, el diseño experimental y el plan s
 
 ```
 docs/           Marco teórico, diseño experimental, notas bibliográficas
+CLAUDE.md       Contexto compacto para agentes / retomar trabajo
 paper/          Manuscrito LaTeX (formato ACL, español)
-src/ontogenia/  Código del pipeline de evaluación (próximamente)
-configs/        YAMLs de tareas custom para lm-evaluation-harness
-notebooks/      Análisis exploratorio y visualización de trayectorias
-scripts/        Orquestación del sweep sobre checkpoints
+src/ontogenia/  Pipeline lm-eval, checkpoints Pythia, SLLN-LP
+configs/        YAMLs de tareas custom (p. ej. Zorro) cuando se integren
+notebooks/      Trayectorias y correlación humano–modelo
+scripts/        run_smoke.sh, run_full_sweep.sh, prefetch_checkpoints.sh
+tests/          Tests unitarios (métricas)
 data/           Datasets humanos curados (gitignored en /raw y /processed)
-results/        JSONs de evaluación por (modelo, checkpoint, tarea) (gitignored)
+results/        JSONs de evaluación por (modelo, checkpoint) (gitignored)
 ```
+
+Para la fase de alineación humana, crear `data/human_milestones.csv` a partir de
+`data/human_milestones.csv.example` (columnas mínimas: `task`, `aoa_months`).
 
 ## Deadline
 

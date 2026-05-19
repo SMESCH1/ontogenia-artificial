@@ -1,0 +1,13 @@
+---
+description: Proyecto Ontogenia — NLP investigación Pythia BLiMP Zorro
+alwaysApply: true
+---
+
+# Ontogenia Artificial
+
+- Entregables del curso y paper en **español** cuando aplique.
+- Modelos: HuggingFace **Pythia deduplicada**, checkpoints vía `revision=step{N}` (no inventar tags).
+- Evaluación principal: **lm-evaluation-harness** (`lm-eval`); tareas BLiMP usan nombres `blimp_*` o grupo `blimp`.
+- Métrica agregada acordada: **SLLN-LP** con α=0.5 por defecto; implementación en `src/ontogenia/metrics.py`.
+- No desviar el scope a SLT/LLC, circuit analysis, ToM, ni entrenamiento desde cero.
+- Resultados bajo `results/` no se commitean; documentar comandos en `CLAUDE.md` y `README.md`.

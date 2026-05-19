@@ -9,6 +9,22 @@ description = "Evaluación longitudinal de la emergencia sintáctica en Pythia y
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
+dependencies = [
+    "torch>=2.1",
+    "transformers>=4.40",
+    "datasets>=2.18",
+    "accelerate>=0.28",
+    "lm-eval>=0.4.2",
+    "numpy>=1.26",
+    "scipy>=1.11",
+    "pandas>=2.1",
+    "pyarrow>=15.0",
+    "pyyaml>=6.0",
+    "tqdm>=4.66",
+]
+
+[project.scripts]
+ontogenia = "ontogenia.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

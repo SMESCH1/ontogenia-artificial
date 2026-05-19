@@ -47,3 +47,6 @@ Thumbs.db
 *.swp
 .idea/
 .vscode/
+
+# Notas locales personales
+notas.txt

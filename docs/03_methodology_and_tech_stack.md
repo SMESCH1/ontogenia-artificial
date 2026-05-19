@@ -11,13 +11,17 @@ No se preentrena ningún modelo. El diseño es **ex-post sobre modelos open-sour
 - **Métrica principal:** SLLN-LP (α=0.5 inicial; se sensibiliza en el análisis). Secundaria: mean_LP (log-prob promedio por token). Accuracy sólo para lectura rápida.
 - **Eje longitudinal:** vector no lineal de ~35 checkpoints (decisión final en Semana 2, ver `04_experimental_design.md`).
 
+### 1.1 Arquitectura del modelo (Pythia)
+
+Pythia es una familia de **transformers causales** (solo decodificador), en la línea **GPT-NeoX** de EleutherAI: bloques con atención multi-cabeza enmascarada (auto-regresiva), FFN, normalización y embeddings de token/posición según la configuración publicada por cada tamaño. Los checkpoints de una misma variante comparten **código e hiperparámetros de entrenamiento**; lo que cambía entre 14M, 160M, 410M, etc. es la **profundidad y el ancho** (capas, dimensión oculta, cabezas). Tablas exactas por tamaño: Biderman et al. (2023), [Pythia (ICML)](https://arxiv.org/abs/2304.01373); configuración en Hugging Face bajo `EleutherAI/pythia-*-deduped`.
+
 ## 2. Pipeline de ejecución (alto nivel)
 
 ```
 1. Para cada (modelo_tamaño, checkpoint_step):
    a. Cargar pesos vía HuggingFace revision=step{N}.
    b. Correr BLiMP + Zorro con lm-evaluation-harness (zero-shot, sin decoding).
-   c. Guardar JSON con log-probs por item en results/{modelo}_step{N}.json.
+   c. Guardar JSON agregado por tarea en `results/sweep/` (y opcionalmente **muestras por ítem** con `--log-samples` y/o `--samples-dir`; ver `CLAUDE.md`).
    d. Liberar VRAM.
 2. Post-proceso: calcular SLLN-LP, accuracy por paradigma, y persistir en
    results/aggregated.parquet.
@@ -64,11 +68,14 @@ No se preentrena ningún modelo. El diseño es **ex-post sobre modelos open-sour
 
 ```
 src/ontogenia/
-├── checkpoints.py       # iterador sobre revisions de Pythia, con cache
-├── metrics.py           # SLLN-LP, mean_LP, accuracy
-├── eval_runner.py       # wrapper sobre lm-eval (llamadas programáticas)
-├── topology.py          # ajuste polinomial, clasificación de curva
-└── human_alignment.py   # parsing Wordbank + Spearman + bootstrap
+├── checkpoints.py      # vector de steps y model_args para HuggingFace
+├── metrics.py          # SLLN-LP, margen en pares
+├── harness.py          # simple_evaluate + guardado JSON
+├── aggregate.py        # consolidar métricas y muestras por-ítem → parquet
+├── topology.py         # clasificación topológica (monótona/U/invertida/oscilatoria)
+├── human_alignment.py  # step de estabilización + Spearman + bootstrap
+├── prefetch.py         # pre-descarga de checkpoints al cache HF
+└── cli.py              # smoke | sweep | eval | aggregate | prefetch | topology | human-alignment
 ```
 
 Los **notebooks** en `notebooks/` no llevan lógica pesada: importan de `src/ontogenia/` y producen figuras.
