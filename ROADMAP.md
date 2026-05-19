@@ -54,19 +54,22 @@ Detalle operacional en [`docs/04_experimental_design.md`](docs/04_experimental_d
 - [x] Pre-descarga disponible vía `ontogenia prefetch` / `scripts/prefetch_checkpoints.sh` (ejecución completa pendiente según espacio en disco y ventana de cómputo).
 
 ### Semana 3 (05/05 – 11/05) — Corrida completa
-- [ ] Sweep Pythia-14m/160m/410m × 24 checkpoints × **BLiMP** (`ontogenia sweep --tasks blimp`) + Zorro cuando esté integrado (~80 paradigmas).
 - [x] `results/` con naming — `smoke/{size}_step{N}_{task}.json`, `sweep/{size}_step{N}.json` (ver `CLAUDE.md` / `AGENTS.md`).
 - [x] `notebooks/02_trajectories.ipynb` operativo con `aggregated_metrics.parquet` + export `topology_summary.parquet`.
 - [x] Clasificación topológica implementada en `src/ontogenia/topology.py` + comando `ontogenia topology`.
+- [ ] **Sweep completo BLiMP** — arrancar `./scripts/run_full_sweep.sh` y dejar corriendo en GPU (~24h por modelo, ~72h total). Orden recomendado: `14m` → `160m` → `410m` para detectar problemas antes de comprometer tiempo en los modelos grandes.
+- [ ] **Post-análisis** — una vez que `results/sweep/` tenga datos: `./scripts/run_post_analysis.sh` (aggregate → parquet → topology → human-alignment).
+- [ ] **Integrar Zorro** — portar YAML de tareas al formato de lm-eval (guía en `docs/integracion_zorro.md`); si no da el tiempo, dejarlo fuera del sweep y documentarlo como limitación.
 - [ ] Buffer para re-correr ante artefactos.
 
-**Estimación de tiempo (orden de magnitud):** el diseño en `04_experimental_design.md` asume **≲24 h por modelo** en 3090/4090 para el sweep BLiMP completo (3 tamaños × 24 checkpoints × grupo `blimp`). En la práctica depende de GPU, drivers y caché HF; conviene **cronometrar una** corrida `14m` × `step0` × `blimp` sin `--limit` y extrapolar ×72.
+**Estimación de tiempo:** ~24h por modelo en 3090/4090 para BLiMP completo. Cronometrar `14m` × `step0` × `blimp` sin `--limit` y extrapolar ×72. Contingencia: correr solo `pythia-160m-deduped` si el tiempo no alcanza (ver Plan de contingencia).
 
 ### Semana 4 (12/05 – 18/05) — Análisis + escritura
 - [x] `notebooks/03_human_correlation.ipynb` operativo + módulo `src/ontogenia/human_alignment.py` y comando `ontogenia human-alignment` (Spearman + bootstrap).
-- [ ] Borrador v1 del paper (6–8 páginas): abstract, intro, related work, método, resultados, discusión.
+- [ ] **Completar `data/human_milestones.csv`** a ≥15 pares (hoy tiene 10) — **bloquea H2**. Formato en `data/human_milestones.csv.example`; fuentes en `docs/05_human_alignment.md`.
+- [ ] Borrador v1 del paper (6–8 páginas): abstract, intro, related work, método, resultados, discusión. Intro + método pueden escribirse **en paralelo al sweep**, sin esperar resultados.
+- [ ] Figuras con calidad publicable (trayectorias por paradigma, scatter Pythia vs. AoA humano).
 - [ ] **Si queda margen:** piloto de EWoK sobre el mejor Pythia identificado.
-- [ ] Figuras preliminares para la presentación.
 
 ### Semana 5 (19/05 – 26/05) — Pulido + presentación
 - [ ] Revisión interna cruzada entre Sebastián, Leandro y Hugo.
