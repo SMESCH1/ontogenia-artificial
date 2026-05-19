@@ -29,17 +29,18 @@ Detalle operacional en [`docs/04_experimental_design.md`](docs/04_experimental_d
 ## Calendario de 5 semanas
 
 ### Semana 1 (21/04 – 27/04) — Research + scaffolding
-**Objetivo:** cerrar marco teórico, hipótesis operacionalizadas y repo organizado. **Sin código todavía.**
+**Objetivo:** cerrar marco teórico, hipótesis operacionalizadas y repo organizado.
 
 - [x] Scaffolding del repositorio (estructura, `.gitignore`, `pyproject.toml`, `requirements.txt`, README).
 - [x] Plantilla ACL (`paper/`) con `main.tex` esqueleto en español.
 - [x] `docs/01_project_overview.md` — resumen ejecutivo, hipótesis, scope.
-- [x] `docs/02_theoretical_framework.md` — curvas-U, SLLN-LP, psicolingüística.
+- [x] `docs/02_theoretical_framework.md` — curvas-U, SLLN-LP, psicolingüística (+ explicación intuitiva del mecanismo en Pythia).
 - [x] `docs/03_methodology_and_tech_stack.md` — modelos, datasets, stack.
-- [x] `docs/04_experimental_design.md` — H1/H2/H3 operacionalizadas.
-- [x] `docs/05_human_alignment.md` — decisión Wordbank + tabla inicial.
-- [x] Plantillas `docs/papers/01-05_*.md` para notas de lectura.
-- [ ] **Pendiente de la semana:** Leandro y Hugo confirman frentes y empiezan la lectura dirigida de los 5 papers críticos.
+- [x] `docs/04_experimental_design.md` — H1/H2/H3 operacionalizadas (+ notas "en concreto" para H1/H3).
+- [x] `docs/05_human_alignment.md` — decisión Wordbank + tabla inicial (10 pares).
+- [x] Plantillas `docs/papers/01-05_*.md` con estructura de notas de lectura.
+- [x] `CLAUDE.md` — guía de arquitectura y comandos para Claude Code.
+- [ ] Lectura dirigida de los 5 papers críticos y completar notas (templates creados, contenido pendiente).
 - [ ] Expandir tabla de `05_human_alignment.md` a ≥15 pares con consenso del equipo.
 - [ ] Descarga del snapshot CSV de Wordbank (inglés) a `data/raw/`.
 
@@ -74,31 +75,18 @@ Detalle operacional en [`docs/04_experimental_design.md`](docs/04_experimental_d
 
 ## Análisis representacional vía SAEs (deseable, no priorizado)
 
-> Abordar sólo si el sweep conductual (Semana 3) termina con margen. Estimación: ~10h.
+> Abordar sólo si el sweep conductual termina con margen. Estimación: ~10h.
 > Documentación completa: [`docs/06_sae_representational_probes.md`](docs/06_sae_representational_probes.md).
-> Scaffold de código: [`src/ontogenia/sae_probes.py`](src/ontogenia/sae_probes.py).
-
-Motivación: los SAEs permiten preguntar si los features internos de Pythia asociados
-a un paradigma sintáctico permanecen activos durante el valle de la curva-U, aunque el
-comportamiento externo (BLiMP accuracy) baje. Esto operacionaliza la distinción
-competencia/performance en el espacio de representaciones.
-
-EleutherAI publicó SAEs pre-entrenados para Pythia-70m, 160m y 410m (deduped)
-en HuggingFace (`EleutherAI/sae-pythia-*`). Se instalan con `pip install sparsify`.
-
-**Limitación a reportar:** los SAEs están entrenados sobre el checkpoint *final*;
-proyectar checkpoints intermedios es una aproximación.
 
 **Hipótesis adicional (H4):** durante el valle de la curva-U conductual, los features
 SAE sintácticos no decrecen — evidencia de disociación competencia/performance.
+Referente metodológico: Kharazi et al. (2025) "The Birth of Knowledge" (arxiv 2505.19440).
 
-Fases:
-- **Fase 0** (~1-2h): identificar features sintácticos en el checkpoint final con `contrastive_features()`.
-- **Fase 1** (~3-6h GPU): sweep longitudinal con `track_features_across_checkpoints()`.
-- **Fase 2** (~1h): plot conductual vs. representacional superpuestos.
-
-Referente metodológico: Kharazi et al. (2025) "The Birth of Knowledge"
-(arxiv 2505.19440) — mismo enfoque para features semánticos en Pythia-12B.
+- [x] `docs/06_sae_representational_probes.md` — motivación, workflow, estimación de esfuerzo.
+- [x] `src/ontogenia/sae_probes.py` — scaffold: `load_sae`, `extract_activations`, `contrastive_features`, `track_features_across_checkpoints`.
+- [ ] Fase 0 (~1-2h): instalar `sparsify` + identificar features sintácticos en checkpoint final.
+- [ ] Fase 1 (~3-6h GPU): sweep longitudinal con `track_features_across_checkpoints()`.
+- [ ] Fase 2 (~1h): plot conductual vs. representacional superpuestos + sección en paper.
 
 ## Plan de contingencia
 
