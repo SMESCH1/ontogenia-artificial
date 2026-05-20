@@ -59,6 +59,63 @@ def compute_h1_stats(topo: pd.DataFrame) -> dict:
     return {r["model_size"]: r for r in rows}
 
 
+# Paradigmas elegidos para Fig 1 (6 paneles)
+REPRESENTATIVE_TASKS = [
+    ("blimp_determiner_noun_agreement_1",      "Det-N agreement\n(morfológico regular)"),
+    ("blimp_irregular_past_participle_verbs",   "Irregular past participle\n(morfológico irregular ↑ U-curve)"),
+    ("blimp_anaphor_number_agreement",          "Anaphor number\n(anáforas)"),
+    ("blimp_passive_1",                         "Pasiva\n(estructural)"),
+    ("blimp_principle_A_c_command",             "Principio A c-command\n(ligamiento)"),
+    ("blimp_wh_questions_object_gap",           "Wh-questions object gap\n(extracción)"),
+]
+
+
+def plot_trajectories(metrics: pd.DataFrame) -> None:
+    """Fig 1: grid 2×3 de trayectorias por paradigma."""
+    blimp = metrics[
+        metrics["task"].astype(str).str.startswith("blimp_") &
+        metrics["training_step"].notna() &
+        metrics["acc,none"].notna()
+    ].copy()
+
+    fig, axes = plt.subplots(2, 3, figsize=(12, 7), sharey=False)
+    axes = axes.flatten()
+
+    for ax, (task, label) in zip(axes, REPRESENTATIVE_TASKS):
+        for model_size in MODEL_SIZES:
+            sub = blimp[
+                (blimp["task"] == task) & (blimp["model_size"] == model_size)
+            ].sort_values("training_step")
+            if sub.empty:
+                continue
+            x = sub["training_step"].values + 1   # +1 para log-scale (step 0 → 1)
+            y = sub["acc,none"].values
+            ax.plot(x, y, "o-", color=MODEL_COLORS[model_size],
+                    label=model_size, linewidth=1.5, markersize=3, alpha=0.85)
+
+        ax.axhline(0.5, color="gray", linestyle="--", linewidth=0.8, alpha=0.5)
+        ax.set_xscale("log")
+        ax.set_xlabel("Training steps (log)", fontsize=8)
+        ax.set_ylabel("Accuracy", fontsize=8)
+        ax.set_title(label, fontsize=8, pad=4)
+        ax.set_ylim(0.4, 1.02)
+        ax.tick_params(labelsize=7)
+        ax.grid(True, alpha=0.3, linestyle=":")
+
+    axes[0].legend(title="Modelo", fontsize=7, title_fontsize=7)
+    fig.suptitle(
+        "Trayectorias de aprendizaje BLiMP — paradigmas representativos",
+        fontsize=10, y=1.01
+    )
+    fig.tight_layout()
+    out_png = FIGURES / "fig1_trajectories.png"
+    out_pdf = FIGURES / "fig1_trajectories.pdf"
+    fig.savefig(out_png, dpi=150, bbox_inches="tight")
+    fig.savefig(out_pdf, bbox_inches="tight")
+    plt.close(fig)
+    print(f"Saved: {out_png}")
+
+
 if __name__ == "__main__":
     metrics = pd.read_parquet(RESULTS / "aggregated_metrics.parquet")
     topo = pd.read_parquet(RESULTS / "topology_summary.parquet")
@@ -68,3 +125,5 @@ if __name__ == "__main__":
     print("=== H1 ===")
     for sz, r in h1.items():
         print(f"  {sz}: {r['n_nonmono']}/{r['n_total']} = {r['pct_nonmono']:.1f}% no-monotone (depth≥5pp)")
+
+    plot_trajectories(metrics)
