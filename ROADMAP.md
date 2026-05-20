@@ -29,17 +29,18 @@ Detalle operacional en [`docs/04_experimental_design.md`](docs/04_experimental_d
 ## Calendario de 5 semanas
 
 ### Semana 1 (21/04 – 27/04) — Research + scaffolding
-**Objetivo:** cerrar marco teórico, hipótesis operacionalizadas y repo organizado. **Sin código todavía.**
+**Objetivo:** cerrar marco teórico, hipótesis operacionalizadas y repo organizado.
 
 - [x] Scaffolding del repositorio (estructura, `.gitignore`, `pyproject.toml`, `requirements.txt`, README).
 - [x] Plantilla ACL (`paper/`) con `main.tex` esqueleto en español.
 - [x] `docs/01_project_overview.md` — resumen ejecutivo, hipótesis, scope.
-- [x] `docs/02_theoretical_framework.md` — curvas-U, SLLN-LP, psicolingüística.
+- [x] `docs/02_theoretical_framework.md` — curvas-U, SLLN-LP, psicolingüística (+ explicación intuitiva del mecanismo en Pythia).
 - [x] `docs/03_methodology_and_tech_stack.md` — modelos, datasets, stack.
-- [x] `docs/04_experimental_design.md` — H1/H2/H3 operacionalizadas.
-- [x] `docs/05_human_alignment.md` — decisión Wordbank + tabla inicial.
-- [x] Plantillas `docs/papers/01-05_*.md` para notas de lectura.
-- [ ] **Pendiente de la semana:** Leandro y Hugo confirman frentes y empiezan la lectura dirigida de los 5 papers críticos.
+- [x] `docs/04_experimental_design.md` — H1/H2/H3 operacionalizadas (+ notas "en concreto" para H1/H3).
+- [x] `docs/05_human_alignment.md` — decisión Wordbank + tabla inicial (10 pares).
+- [x] Plantillas `docs/papers/01-05_*.md` con estructura de notas de lectura.
+- [x] `CLAUDE.md` — guía de arquitectura y comandos para Claude Code.
+- [ ] Lectura dirigida de los 5 papers críticos y completar notas (templates creados, contenido pendiente).
 - [ ] Expandir tabla de `05_human_alignment.md` a ≥15 pares con consenso del equipo.
 - [ ] Descarga del snapshot CSV de Wordbank (inglés) a `data/raw/`.
 
@@ -53,19 +54,22 @@ Detalle operacional en [`docs/04_experimental_design.md`](docs/04_experimental_d
 - [x] Pre-descarga disponible vía `ontogenia prefetch` / `scripts/prefetch_checkpoints.sh` (ejecución completa pendiente según espacio en disco y ventana de cómputo).
 
 ### Semana 3 (05/05 – 11/05) — Corrida completa
-- [ ] Sweep Pythia-14m/160m/410m × 24 checkpoints × **BLiMP** (`ontogenia sweep --tasks blimp`) + Zorro cuando esté integrado (~80 paradigmas).
 - [x] `results/` con naming — `smoke/{size}_step{N}_{task}.json`, `sweep/{size}_step{N}.json` (ver `CLAUDE.md` / `AGENTS.md`).
 - [x] `notebooks/02_trajectories.ipynb` operativo con `aggregated_metrics.parquet` + export `topology_summary.parquet`.
 - [x] Clasificación topológica implementada en `src/ontogenia/topology.py` + comando `ontogenia topology`.
+- [ ] **Sweep completo BLiMP** — arrancar `./scripts/run_full_sweep.sh` y dejar corriendo en GPU (~24h por modelo, ~72h total). Orden recomendado: `14m` → `160m` → `410m` para detectar problemas antes de comprometer tiempo en los modelos grandes.
+- [ ] **Post-análisis** — una vez que `results/sweep/` tenga datos: `./scripts/run_post_analysis.sh` (aggregate → parquet → topology → human-alignment).
+- [ ] **Integrar Zorro** — portar YAML de tareas al formato de lm-eval (guía en `docs/integracion_zorro.md`); si no da el tiempo, dejarlo fuera del sweep y documentarlo como limitación.
 - [ ] Buffer para re-correr ante artefactos.
 
-**Estimación de tiempo (orden de magnitud):** el diseño en `04_experimental_design.md` asume **≲24 h por modelo** en 3090/4090 para el sweep BLiMP completo (3 tamaños × 24 checkpoints × grupo `blimp`). En la práctica depende de GPU, drivers y caché HF; conviene **cronometrar una** corrida `14m` × `step0` × `blimp` sin `--limit` y extrapolar ×72.
+**Estimación de tiempo:** ~24h por modelo en 3090/4090 para BLiMP completo. Cronometrar `14m` × `step0` × `blimp` sin `--limit` y extrapolar ×72. Contingencia: correr solo `pythia-160m-deduped` si el tiempo no alcanza (ver Plan de contingencia).
 
 ### Semana 4 (12/05 – 18/05) — Análisis + escritura
 - [x] `notebooks/03_human_correlation.ipynb` operativo + módulo `src/ontogenia/human_alignment.py` y comando `ontogenia human-alignment` (Spearman + bootstrap).
-- [ ] Borrador v1 del paper (6–8 páginas): abstract, intro, related work, método, resultados, discusión.
+- [ ] **Completar `data/human_milestones.csv`** a ≥15 pares (hoy tiene 10) — **bloquea H2**. Formato en `data/human_milestones.csv.example`; fuentes en `docs/05_human_alignment.md`.
+- [ ] Borrador v1 del paper (6–8 páginas): abstract, intro, related work, método, resultados, discusión. Intro + método pueden escribirse **en paralelo al sweep**, sin esperar resultados.
+- [ ] Figuras con calidad publicable (trayectorias por paradigma, scatter Pythia vs. AoA humano).
 - [ ] **Si queda margen:** piloto de EWoK sobre el mejor Pythia identificado.
-- [ ] Figuras preliminares para la presentación.
 
 ### Semana 5 (19/05 – 26/05) — Pulido + presentación
 - [ ] Revisión interna cruzada entre Sebastián, Leandro y Hugo.
@@ -74,6 +78,21 @@ Detalle operacional en [`docs/04_experimental_design.md`](docs/04_experimental_d
 - [ ] README reproducible con instrucciones end-to-end.
 - [ ] Tag `v1.0-presentacion` el 25/05.
 - [ ] **26/05: presentación.**
+
+## Análisis representacional vía SAEs (deseable, no priorizado)
+
+> Abordar sólo si el sweep conductual termina con margen. Estimación: ~10h.
+> Documentación completa: [`docs/06_sae_representational_probes.md`](docs/06_sae_representational_probes.md).
+
+**Hipótesis adicional (H4):** durante el valle de la curva-U conductual, los features
+SAE sintácticos no decrecen — evidencia de disociación competencia/performance.
+Referente metodológico: Kharazi et al. (2025) "The Birth of Knowledge" (arxiv 2505.19440).
+
+- [x] `docs/06_sae_representational_probes.md` — motivación, workflow, estimación de esfuerzo.
+- [x] `src/ontogenia/sae_probes.py` — scaffold: `load_sae`, `extract_activations`, `contrastive_features`, `track_features_across_checkpoints`.
+- [ ] Fase 0 (~1-2h): instalar `sparsify` + identificar features sintácticos en checkpoint final.
+- [ ] Fase 1 (~3-6h GPU): sweep longitudinal con `track_features_across_checkpoints()`.
+- [ ] Fase 2 (~1h): plot conductual vs. representacional superpuestos + sección en paper.
 
 ## Plan de contingencia
 

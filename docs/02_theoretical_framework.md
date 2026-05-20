@@ -15,11 +15,36 @@ Este proyecto se ubica en esta tradición, con foco restringido a la emergencia 
 
 La **curva en U** es un patrón clásico en la psicolingüística del desarrollo. Para los verbos irregulares del inglés, por ejemplo, los niños exhiben tres fases:
 
-1. **Memorización correcta temprana:** producen *went* como forma aislada, tratándola como un ítem léxico.
-2. **Sobre-regularización:** al consolidar la regla *-ed*, generalizan y producen *goed* o *wented*, temporalmente degradando el rendimiento en estas formas.
-3. **Dominio maduro:** reconcilian la regla con las excepciones y recuperan *went*, ahora como excepción lexicalizada.
+1. **Memorización correcta temprana:** producen *went* como forma aislada, tratándola como un ítem léxico sin analizar.
+2. **Sobre-regularización:** al consolidar la regla general del pasado (*verbo + -ed*), la generalizan indiscriminadamente y producen *goed* o *wented*, degradando temporalmente el rendimiento en estas formas.
+3. **Dominio maduro:** reconcilian la regla con las excepciones y recuperan *went*, ahora como excepción lexicalizada dentro de un sistema morfológico estructurado.
 
-La interpretación canónica (Rumelhart & McClelland 1986; Marcus et al. 1992) es que estas curvas son la firma conductual de una transición desde memoria episódica hacia inducción algorítmica. No son un "error" del aprendiz: son evidencia de que el sistema está re-estructurando su representación.
+La curva de aciertos en el tiempo tiene literalmente forma de U: sube, cae, vuelve a subir.
+
+```
+acierto
+  │  ●              ● ● ●
+  │    ●          ●
+  │      ● ●  ● ●
+  │
+  └────────────────────────▶ tiempo / exposición
+```
+
+La interpretación canónica (Rumelhart & McClelland 1986; Marcus et al. 1992) es que estas curvas son la firma conductual de una transición desde **memoria episódica** hacia **inducción algorítmica**. No son un error del aprendiz: son evidencia de que el sistema está reestructurando su representación interna — aprender la regla general primero *empeora* el rendimiento en las excepciones antes de mejorarlo.
+
+### La curva-U en Pythia
+
+En este proyecto, el "tiempo" es el eje de checkpoints de entrenamiento (pasos de pre-entrenamiento de Pythia), y el "acierto" es la accuracy por paradigma en BLiMP/Zorro: la proporción de pares mínimos para los que el modelo asigna mayor log-probabilidad a la oración gramatical que a la agramatical.
+
+El mecanismo análogo en el modelo sería:
+
+1. **Checkpoints tempranos:** Pythia ha visto pocas ocurrencias de *went* pero ya las memorizó superficialmente. La accuracy en el paradigma `irregular_past_tense` es razonable.
+2. **Checkpoints intermedios:** el modelo ha generalizado la regla del pasado (*-ed*) con suficiente fuerza como para pisotear las excepciones memorizadas. La accuracy *cae*. El modelo "sabe más gramática" y por eso comete más errores en las irregulares.
+3. **Checkpoints tardíos:** el modelo tiene suficiente exposición a las excepciones *y* a la regla general, y las reconcilia. La accuracy *sube*.
+
+Graficado sobre el eje de training steps (en escala logarítmica), este patrón produce una U visible a nivel de paradigma individual.
+
+**Por qué el promedio final no alcanza:** si sólo se mide el checkpoint final, la accuracy puede ser alta independientemente de si el modelo llegó ahí de forma monótona o atravesando una U profunda. El análisis longitudinal que hacemos aquí es el único que puede distinguir ambos casos.
 
 **Observación empírica clave de los últimos dos años:** los LLMs auto-regresivos también exhiben curvas en U — y variantes aún más complejas — a nivel de paradigma sintáctico individual. Bunzeck & Zarrieß (2024), en *"Fifty shapes of BLiMP"*, ajustaron polinomios de quinto grado a las trayectorias de cada paradigma de BLiMP sobre checkpoints de Pythia y BabyLlama, y encontraron:
 
