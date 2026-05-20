@@ -119,6 +119,63 @@ def plot_trajectories(metrics: pd.DataFrame) -> None:
     print(f"Saved: {out_png}")
 
 
+CONFIDENCE_COLORS = {"alta": "#2196F3", "media": "#FF9800", "baja": "#9E9E9E"}
+CONFIDENCE_LABELS = {"alta": "Alta", "media": "Media", "baja": "Baja"}
+
+
+def plot_human_alignment_scatter(
+    metrics: pd.DataFrame,
+    milestones: pd.DataFrame,
+    model_size: str = "160m",
+) -> None:
+    """Fig 2: scatter step_stabilize vs AoA humano (Spearman)."""
+    from ontogenia.human_alignment import compute_stabilization_table
+
+    stab = compute_stabilization_table(
+        metrics, target_model_size=model_size, metric_col="acc,none"
+    )
+    stab = stab[stab["task"] != "blimp"]
+
+    merged = stab.merge(milestones[["task", "aoa_months", "confidence"]], on="task", how="inner")
+    merged = merged.dropna(subset=["training_step_stabilize", "aoa_months"])
+
+    x = merged["aoa_months"].values
+    y = merged["training_step_stabilize"].values + 1  # +1 para log
+
+    rho, pval = spearmanr(x, y)
+
+    fig, ax = plt.subplots(figsize=(7, 5))
+
+    for conf in ["alta", "media", "baja"]:
+        mask = merged["confidence"] == conf
+        ax.scatter(
+            merged.loc[mask, "aoa_months"],
+            merged.loc[mask, "training_step_stabilize"] + 1,
+            c=CONFIDENCE_COLORS[conf],
+            label=f"Confianza {CONFIDENCE_LABELS[conf]} (n={mask.sum()})",
+            s=40, alpha=0.75, edgecolors="white", linewidths=0.4, zorder=3,
+        )
+
+    ax.set_yscale("log")
+    ax.set_xlabel("Edad de adquisición humana (AoA, meses)", fontsize=10)
+    ax.set_ylabel(f"Step de estabilización Pythia-{model_size} (log)", fontsize=10)
+    ax.set_title(
+        f"Alineación Pythia-{model_size} ↔ adquisición humana\n"
+        f"Spearman ρ = {rho:.3f}, p = {pval:.3f} (n={len(merged)})",
+        fontsize=10,
+    )
+    ax.legend(fontsize=8, loc="upper left")
+    ax.grid(True, alpha=0.3, linestyle=":")
+
+    fig.tight_layout()
+    out_png = FIGURES / f"fig2_human_alignment_{model_size}.png"
+    out_pdf = FIGURES / f"fig2_human_alignment_{model_size}.pdf"
+    fig.savefig(out_png, dpi=150, bbox_inches="tight")
+    fig.savefig(out_pdf, bbox_inches="tight")
+    plt.close(fig)
+    print(f"Saved: {out_png}  (rho={rho:.3f}, p={pval:.3f}, n={len(merged)})")
+
+
 if __name__ == "__main__":
     metrics = pd.read_parquet(RESULTS / "aggregated_metrics.parquet")
     topo = pd.read_parquet(RESULTS / "topology_summary.parquet")
@@ -130,3 +187,5 @@ if __name__ == "__main__":
         print(f"  {sz}: {r['n_nonmono']}/{r['n_total']} = {r['pct_nonmono']:.1f}% no-monotone (depth≥5pp)")
 
     plot_trajectories(metrics)
+    for sz in MODEL_SIZES:
+        plot_human_alignment_scatter(metrics, milestones, model_size=sz)
