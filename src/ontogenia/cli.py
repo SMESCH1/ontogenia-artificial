@@ -117,6 +117,11 @@ def cmd_sweep(args: argparse.Namespace) -> int:
         pretrained = PYTHIA_MODEL_IDS[size]
         for step in steps:
             rev = revision_for_step(step)
+            fname = f"{size}_{rev}.json"
+            out_path = out_root / "sweep" / fname
+            if not args.force and out_path.exists():
+                print(json.dumps({"skipped": str(out_path.resolve()), "size": size, "step": step}))
+                continue
             margs = model_args_for_pythia(size, step, dtype=args.dtype)
             print(f"[sweep] {pretrained} @ {rev} tasks={tasks} device={device}", file=sys.stderr)
             raw = run_lm_eval(
@@ -135,8 +140,6 @@ def cmd_sweep(args: argparse.Namespace) -> int:
                 revision=rev,
                 tasks=tasks,
             )
-            fname = f"{size}_{rev}.json"
-            out_path = out_root / "sweep" / fname
             sidecar = None
             if args.samples_dir:
                 sidecar = Path(args.samples_dir).expanduser() / f"{out_path.stem}_samples.json"
@@ -355,6 +358,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     pw.add_argument("--bootstrap-iters", type=int, default=0)
     pw.add_argument("--output-dir", default="results")
+    pw.add_argument(
+        "--force",
+        action="store_true",
+        help="Re-correr aunque el JSON de salida ya exista (por defecto se omite)",
+    )
 
     pa = sub.add_parser(
         "aggregate",
