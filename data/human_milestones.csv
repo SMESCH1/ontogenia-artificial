@@ -1,0 +1,68 @@
+task,aoa_months,source,confidence,notes
+blimp_determiner_noun_agreement_1,27,Brown 1973 Stage II; Wordbank determiners,alta,DET-N concordancia regular; mediana rango 24-30
+blimp_determiner_noun_agreement_2,27,Brown 1973 Stage II; Wordbank determiners,alta,DET-N concordancia regular; mediana rango 24-30
+blimp_determiner_noun_agreement_with_adjective_1,30,Brown 1973; extension a adjetivos,media,concordancia DET-ADJ-N; rango 27-33
+blimp_determiner_noun_agreement_with_adj_2,30,Brown 1973; extension a adjetivos,media,concordancia DET-ADJ-N; rango 27-33
+blimp_determiner_noun_agreement_irregular_1,33,Brown 1973; irregulares emergen despues,media,DET con NPs irregulares; rango 30-36
+blimp_determiner_noun_agreement_irregular_2,33,Brown 1973; irregulares emergen despues,media,DET con NPs irregulares; rango 30-36
+blimp_determiner_noun_agreement_with_adj_irregular_1,36,estimacion experto,baja,DET-ADJ-N con irregulares; rango 33-39
+blimp_determiner_noun_agreement_with_adj_irregular_2,36,estimacion experto,baja,DET-ADJ-N con irregulares; rango 33-39
+blimp_transitive,27,Brown 1973 Stage II; Tomasello 1992,alta,estructuras transitivas; rango 24-30
+blimp_intransitive,27,Brown 1973 Stage II; Tomasello 1992,alta,intransitivas; rango 24-30
+blimp_animate_subject_trans,30,Tomasello 1992; Fisher 2002,media,sujeto animado + verbo transitivo; rango 27-33
+blimp_causative,42,Gropen et al. 1989; Pinker 1989,media,alternancia causativa; rango 36-48
+blimp_inchoative,42,Gropen et al. 1989; Pinker 1989,media,alternancia incoativa; rango 36-48
+blimp_drop_argument,36,Rispoli 2005; estimacion experto,media,omision de argumento obligatorio; rango 33-39
+blimp_regular_plural_subject_verb_agreement_1,33,Brown 1973 Stage III; CHILDES,media,concordancia SV plural regular; rango 30-36
+blimp_regular_plural_subject_verb_agreement_2,33,Brown 1973 Stage III; CHILDES,media,concordancia SV plural regular; rango 30-36
+blimp_irregular_plural_subject_verb_agreement_1,54,Rispoli 2005; Marcus et al. 1992,media,concordancia SV plural irregular (curva-U); rango 48-60
+blimp_irregular_plural_subject_verb_agreement_2,54,Rispoli 2005; Marcus et al. 1992,media,concordancia SV plural irregular (curva-U); rango 48-60
+blimp_irregular_past_participle_verbs,42,Marcus et al. 1992; Wordbank action_words,media,participio irregular (went/ate/ran); rango 36-48; curva-U esperada
+blimp_irregular_past_participle_adjectives,42,Marcus et al. 1992; estimacion experto,media,participio irregular predicativo; rango 36-48
+blimp_anaphor_number_agreement,42,Wexler 1994; Chien & Wexler 1990,baja,concordancia numero con anafora; rango 36-48
+blimp_anaphor_gender_agreement,47,Wexler 1994; Chien & Wexler 1990,baja,concordancia genero con anafora; rango 40-54
+blimp_principle_A_c_command,72,Chien & Wexler 1990; estimacion experto,baja,Principio A c-comando; rango 60-84
+blimp_principle_A_case_1,72,Chien & Wexler 1990,baja,Principio A caso; rango 60-84
+blimp_principle_A_case_2,72,Chien & Wexler 1990,baja,Principio A caso; rango 60-84
+blimp_principle_A_domain_1,66,Chien & Wexler 1990,baja,Principio A dominio local; rango 60-72
+blimp_principle_A_domain_2,66,Chien & Wexler 1990,baja,Principio A dominio local; rango 60-72
+blimp_principle_A_domain_3,66,Chien & Wexler 1990,baja,Principio A dominio local; rango 60-72
+blimp_principle_A_reconstruction,78,Chien & Wexler 1990; estimacion experto,baja,Principio A con reconstruccion; rango 72-84
+blimp_animate_subject_passive,54,Maratsos et al. 1985; Gordon & Chafetz 1990,media,pasiva con sujeto animado; rango 48-60
+blimp_passive_1,54,Maratsos et al. 1985,media,construccion pasiva; rango 48-60
+blimp_passive_2,54,Maratsos et al. 1985,media,construccion pasiva; rango 48-60
+blimp_existential_there_subject_raising,48,estimacion experto,baja,there-existencial raising sujeto; rango 42-54
+blimp_existential_there_object_raising,48,estimacion experto,baja,there-existencial raising objeto; rango 42-54
+blimp_existential_there_quantifiers_1,48,estimacion experto,baja,there-existencial con cuantificadores; rango 42-54
+blimp_existential_there_quantifiers_2,48,estimacion experto,baja,there-existencial con cuantificadores; rango 42-54
+blimp_expletive_it_object_raising,54,estimacion experto,baja,it-expletivo raising; rango 48-60
+blimp_tough_vs_raising_1,60,estimacion experto,baja,tough-movement vs raising; rango 54-66
+blimp_tough_vs_raising_2,60,estimacion experto,baja,tough-movement vs raising; rango 54-66
+blimp_ellipsis_n_bar_1,42,Crain et al. 2002; estimacion experto,baja,elipsis NP-bar; rango 36-48
+blimp_ellipsis_n_bar_2,42,Crain et al. 2002; estimacion experto,baja,elipsis NP-bar; rango 36-48
+blimp_distractor_agreement_relational_noun,54,estimacion experto; Lambrecht 1994,baja,concordancia con distractor nominal relacional; rango 48-60
+blimp_distractor_agreement_relative_clause,54,estimacion experto,baja,concordancia con distractor clausula relativa; rango 48-60
+blimp_superlative_quantifiers_1,48,Musolino & Lidz 2006; estimacion experto,baja,cuantificadores superlativos; rango 42-54
+blimp_superlative_quantifiers_2,48,Musolino & Lidz 2006; estimacion experto,baja,cuantificadores superlativos; rango 42-54
+blimp_npi_present_1,66,Musolino & Lidz 2006; Lidz & Musolino 2002,baja,items de polaridad negativa; rango 60-72
+blimp_npi_present_2,66,Musolino & Lidz 2006,baja,items de polaridad negativa; rango 60-72
+blimp_only_npi_licensor_present,66,Musolino & Lidz 2006,baja,NPI con licenciador only; rango 60-72
+blimp_only_npi_scope,72,Musolino & Lidz 2006,baja,alcance NPI con only; rango 66-78
+blimp_matrix_question_npi_licensor_present,66,Musolino & Lidz 2006; estimacion experto,baja,NPI en pregunta matriz; rango 60-72
+blimp_sentential_negation_npi_licensor_present,66,Musolino & Lidz 2006,baja,NPI con negacion oracional; rango 60-72
+blimp_sentential_negation_npi_scope,66,Musolino & Lidz 2006,baja,alcance NPI con negacion; rango 60-72
+blimp_adjunct_island,72,Goodluck 1991; estimacion experto,baja,isla de adjunto; rango 66-84
+blimp_complex_NP_island,72,Goodluck 1991; estimacion experto,baja,isla de SN complejo; rango 66-84
+blimp_coordinate_structure_constraint_complex_left_branch,72,estimacion experto,baja,restriccion estructura coordinada (rama izq compleja); rango 66-78
+blimp_coordinate_structure_constraint_object_extraction,72,estimacion experto,baja,restriccion estructura coordinada (extraccion objeto); rango 66-78
+blimp_left_branch_island_echo_question,72,Goodluck 1991; estimacion experto,baja,isla rama izquierda (eco); rango 66-84
+blimp_left_branch_island_simple_question,72,Goodluck 1991; estimacion experto,baja,isla rama izquierda (simple); rango 66-84
+blimp_sentential_subject_island,72,Goodluck 1991; estimacion experto,baja,isla de sujeto oracional; rango 66-84
+blimp_wh_questions_object_gap,39,Stromswold 1995; Thornton 1990,media,pregunta wh con gap en objeto; rango 36-42
+blimp_wh_questions_subject_gap,36,Stromswold 1995; Thornton 1990,media,pregunta wh con gap en sujeto (mas temprana); rango 33-39
+blimp_wh_questions_subject_gap_long_distance,48,estimacion experto; Stromswold 1995,baja,pregunta wh sujeto larga distancia; rango 42-54
+blimp_wh_island,72,Goodluck 1991; estimacion experto,baja,isla wh; rango 66-84
+blimp_wh_vs_that_no_gap,60,estimacion experto,baja,wh vs that sin gap; rango 54-66
+blimp_wh_vs_that_no_gap_long_distance,66,estimacion experto,baja,wh vs that sin gap larga distancia; rango 60-72
+blimp_wh_vs_that_with_gap,60,estimacion experto,baja,wh vs that con gap; rango 54-66
+blimp_wh_vs_that_with_gap_long_distance,66,estimacion experto,baja,wh vs that con gap larga distancia; rango 60-72
