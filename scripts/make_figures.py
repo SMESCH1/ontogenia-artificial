@@ -25,7 +25,6 @@ MODEL_SIZES = ["14m", "160m", "410m"]
 
 # ── Umbral para H1: caída real (no ruido polinomial) ─────────────────────────
 DEPTH_THRESHOLD = 0.05   # ≥ 5 pp de profundidad
-PEAK_BEFORE_END = True   # el máximo recuperado ocurre después del mínimo
 
 
 def compute_h1_stats(topo: pd.DataFrame) -> dict:
@@ -38,6 +37,7 @@ def compute_h1_stats(topo: pd.DataFrame) -> dict:
     rows = []
     for model_size in MODEL_SIZES:
         sub = topo[topo["model_size"] == model_size].copy()
+        # "blimp" es la fila agregada del grupo de tareas; excluir para operar sobre los 67 paradigmas
         sub = sub[sub["task"] != "blimp"]
 
         is_u = (
