@@ -102,12 +102,15 @@ def plot_trajectories(metrics: pd.DataFrame) -> None:
         ax.tick_params(labelsize=7)
         ax.grid(True, alpha=0.3, linestyle=":")
 
-    axes[0].legend(title="Modelo", fontsize=7, title_fontsize=7)
+    from matplotlib.lines import Line2D
+    handles = [Line2D([0], [0], color=c, marker="o", label=sz)
+               for sz, c in MODEL_COLORS.items()]
+    axes[0].legend(handles=handles, title="Modelo", fontsize=7, title_fontsize=7)
+    fig.tight_layout(rect=[0, 0, 1, 0.95])
     fig.suptitle(
         "Trayectorias de aprendizaje BLiMP — paradigmas representativos",
-        fontsize=10, y=1.01
+        fontsize=10,
     )
-    fig.tight_layout()
     out_png = FIGURES / "fig1_trajectories.png"
     out_pdf = FIGURES / "fig1_trajectories.pdf"
     fig.savefig(out_png, dpi=150, bbox_inches="tight")
