@@ -32,52 +32,97 @@
 \maketitle
 
 \begin{abstract}
-\textit{Placeholder del abstract (150--200 palabras). Se completa en Semana 4.}
-
-Evaluamos longitudinalmente los checkpoints intermedios de la suite Pythia sobre pares mínimos sintácticos (BLiMP y Zorro) para caracterizar la topología de las trayectorias de aprendizaje a nivel de paradigma individual, y correlacionamos el orden de estabilización con datos de adquisición humana (Wordbank). Mostramos que (i) una fracción no trivial de los paradigmas exhibe curvas no monótonas, (ii) el ranking de emergencia correlaciona con la edad de adquisición humana, y (iii) los paradigmas con excepciones morfológicas presentan curvas en U más profundas que los puramente estructurales.
+Evaluamos longitudinalmente 24 checkpoints intermedios de los modelos Pythia (14M, 160M y 410M parámetros, versión deduplicada) sobre los 67 paradigmas sintácticos de BLiMP, midiendo la trayectoria de accuracy de pares mínimos a lo largo del entrenamiento. Para cada paradigma clasificamos la topología de la curva y calculamos el paso de estabilización. Encontramos que (\textbf{H1}) entre el 76,1\% (Pythia-14M) y el 91,0\% (Pythia-410M) de los paradigmas exhiben trayectorias no monótonas con caída mínima de 5 puntos porcentuales seguida de recuperación, superando ampliamente el umbral hipotético del 30\%. La correlación de Spearman entre el ranking de estabilización de Pythia-160M y la edad de adquisición humana estimada (Wordbank + literatura) (\textbf{H2}) es $\rho = -0{,}180$ ($p = 0{,}168$, $n = 60$), no significativa y en dirección contraria a la esperada; discutimos las limitaciones del mapeo AoA. Los paradigmas morfológicos irregulares presentan mayor profundidad media de valle ($\bar{d} = 0{,}437$) que los paradigmas estructurales/islas/NPI ($\bar{d} = 0{,}318$), apoyando parcialmente \textbf{H3}.
 \end{abstract}
 
 \section{Introducción}
 \label{sec:introduccion}
 
-\textit{Placeholder. Motivación, gap, contribución, roadmap del paper.}
+El estudio de la adquisición del lenguaje ha identificado una fenomenología robusta: los niños no aprenden las reglas lingüísticas monotónicamente. En morfología verbal, por ejemplo, se observan \textit{curvas en U} donde el niño primero usa formas irregulares correctas (\textit{went}), luego sobrergulariza (\textit{goed}), y finalmente recupera la forma correcta~\cite{marcus1992overregularization}. Este patrón refleja la tensión entre memorización de ítems y abstracción de reglas.
+
+Los modelos de lenguaje de gran escala aprenden de enormes corpus de texto. Una pregunta natural es si su proceso de aprendizaje exhibe fenomenología similar: ¿aparecen curvas no monótonas durante el entrenamiento? Y, si es así, ¿el orden en que emergen las competencias sintácticas refleja el orden de adquisición humana?
+
+Este trabajo responde estas preguntas evaluando los 24 checkpoints intermedios de tres modelos Pythia~\cite{biderman2023pythia} sobre los 67 paradigmas de BLiMP~\cite{warstadt2020blimp} y correlacionando el orden de estabilización con datos de edad de adquisición humana (Wordbank,~\citealt{frank2017wordbank}). Nuestras contribuciones son: (1) análisis sistemático de la topología de curvas de aprendizaje en modelos de 14M a 410M parámetros; (2) primera comparación cuantitativa entre el orden de emergencia sintáctica en LLMs y el orden de adquisición infantil; (3) evidencia de que los paradigmas morfológicos irregulares exhiben valles más profundos, consistente con la predicción conexionista de curvas en U.
 
 \section{Trabajo Relacionado}
 \label{sec:related}
 
-\textit{Developmental interpretability, curvas en U sintácticas, alineación humano-modelo.}
+\paragraph{Interpretabilidad del desarrollo.} Kendiukhov~\citeyear{kendiukhov2025} sistematiza la ``developmental interpretability'' como campo emergente que estudia cómo las representaciones de los LLMs evolucionan durante el entrenamiento. Nuestro trabajo se inscribe en esta agenda aplicando una metodología conductual (pares mínimos) en lugar de una mecanicista.
+
+\paragraph{Curvas no monótonas en LLMs.} Bunzeck y Zarrieß~\citeyear{bunzeck2024shapes} documentan curvas no monótonas en modelos BabyLM entrenados con datos infantiles sobre una versión extendida de BLiMP (\textit{Fifty Shapes of BLiMP}), reportando que formas U-shaped son comunes. Nuestro trabajo extiende este análisis a la familia Pythia con datos deduplicados a mayor escala.
+
+\paragraph{Alineación humano-modelo.} Frank et al.~\citeyear{frank2017wordbank} proveen la base de datos Wordbank sobre producción léxica infantil. La conexión entre datos de Wordbank y evaluación sintáctica de LLMs es metodológicamente desafiante (§~\ref{sec:metodo}); reportamos honestamente sus limitaciones.
 
 \section{Método}
 \label{sec:metodo}
 
 \subsection{Modelos y checkpoints}
-\textit{Pythia 14m/160m/410m deduplicados, 24 checkpoints log-espaciados.}
+Utilizamos los modelos Pythia~\cite{biderman2023pythia} en sus versiones deduplicadas de 14M, 160M y 410M parámetros, disponibles en HuggingFace bajo \texttt{EleutherAI/pythia-\{size\}-deduped}. Evaluamos 24 checkpoints log-espaciados entre los pasos 0 y 143\,000 de entrenamiento: $\{0, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1000, 2000, 4000, 8000, 16000, 32000, 48000, 64000, 80000, 96000, 112000, 128000, 143000\}$. Esta espaciación captura tanto la dinámica temprana (pasos cortos) como la fase tardía de refinamiento.
 
 \subsection{Tareas y métrica}
-\textit{BLiMP, Zorro. SLLN-LP como métrica principal.}
+Evaluamos los 67 paradigmas de BLiMP (\textit{Benchmark of Linguistic Minimal Pairs}), que cubre fenómenos de concordancia, anáforas, islas sintácticas, construcciones pasivas, ligamiento, NPI y dependencias de largo alcance~\cite{warstadt2020blimp}. Cada paradigma consiste en 1\,000 pares mínimos (oración gramatical vs.\ agramatical); la métrica principal es \textit{accuracy} de pares (fracción de pares donde el modelo asigna mayor log-probabilidad a la oración gramatical). Usamos \texttt{lm-evaluation-harness}~\cite{eval-harness} con el grupo de tareas \texttt{blimp} y sin restricción de ítems (\texttt{limit=None}).
+
+Para la clasificación topológica, ajustamos un polinomio de grado 5 a las 24 mediciones en escala log de pasos de entrenamiento y contamos los cambios de signo del gradiente. Reportamos como \textit{no monótono} todo paradigma con profundidad de valle $\geq 5$ pp y donde el mínimo ocurre antes del máximo final (criterio conservador sobre la clasificación polinomial bruta).
 
 \subsection{Alineación humana}
-\textit{Wordbank como fuente primaria de AoA; literatura complementaria para sintaxis abstracta.}
+Definimos el \textit{paso de estabilización} de un paradigma como el primer checkpoint en que la accuracy supera el 90\% de su máximo y se mantiene así durante al menos 3 checkpoints consecutivos. Creamos una tabla de mapeo entre los 67 paradigmas BLiMP y edades de adquisición humana (AoA) en meses, basada en Wordbank~\cite{frank2017wordbank}, \citet{marcus1992overregularization}, \citet{brown1973first}, \citet{wexler1994optional}, y \citet{stromswold1995acquisition}; las entradas sin dato cuantitativo directo usan estimaciones de consenso de expertos y se marcan como baja confianza ($n_{\text{baja}} = 46$). La alineación entre rankings se mide con la correlación de Spearman con intervalo de confianza bootstrap ($N = 10\,000$ iteraciones, módulo \texttt{scipy.stats}).
 
 \section{Experimentos}
 \label{sec:experimentos}
 
-\textit{Grilla experimental, hipótesis operacionalizadas H1--H3.}
+Generamos 72 archivos de evaluación: 3 modelos $\times$ 24 checkpoints, con el grupo de tareas \texttt{blimp} (67 subtareas). El sweep completo se ejecutó en GPU local (CUDA) con \texttt{batch\_size=auto}. Los resultados se consolidaron en \texttt{results/aggregated\_metrics.parquet} (4\,899 filas) mediante \texttt{ontogenia aggregate}.
 
 \section{Resultados}
 \label{sec:resultados}
 
-\textit{Figuras de trayectorias, clasificación topológica, correlación Spearman con bootstrap.}
+\subsection{H1: Trayectorias no monótonas}
+
+Con el criterio de profundidad mínima de 5 pp, encontramos que el \textbf{76,1\%} (Pythia-14M), \textbf{85,1\%} (Pythia-160M) y \textbf{91,0\%} (Pythia-410M) de los 67 paradigmas exhiben trayectorias no monótonas (Figura~\ref{fig:topology}). Esto supera ampliamente el umbral hipotético del 30\% en todos los tamaños de modelo (\textbf{H1 confirmada}). La Figura~\ref{fig:trajectories} ilustra ejemplos representativos: el paradigma \textit{irregular past participle} muestra una caída pronunciada en torno al paso 64--128 seguida de recuperación, consistente con una curva en U de tipo morfológico.
+
+\subsection{H2: Alineación con adquisición humana}
+
+La correlación de Spearman entre el ranking de estabilización de Pythia-160M y el ranking de AoA humana es $\rho = -0{,}180$ ($p = 0{,}168$; IC 95\%: $[-0{,}444,\, 0{,}110]$; $n = 60$). El resultado no es estadísticamente significativo y la dirección es negativa, contraria a la predicción de H2 (\textbf{H2 no confirmada}). Discutimos las posibles causas en §~\ref{sec:discusion}.
+
+\subsection{H3: Profundidad de valles en paradigmas irregulares}
+
+Los paradigmas morfológicos irregulares (participios y plurales irregulares; $n = 8$) presentan una profundidad media de valle de $\bar{d} = 0{,}437$, comparado con $\bar{d} = 0{,}318$ en los paradigmas puramente estructurales (islas, NPI, ligamiento, pasivas; $n = 32$). La diferencia ($\Delta = 0{,}119$) va en la dirección predicha por H3 (\textbf{H3 parcialmente confirmada}), aunque no se realizó test de significatividad sobre esta comparación.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\columnwidth]{../figures/fig1_trajectories.pdf}
+  \caption{Trayectorias de accuracy BLiMP para seis paradigmas representativos (eje X: pasos de entrenamiento en escala log; eje Y: accuracy de pares mínimos; línea punteada: azar = 0.5).}
+  \label{fig:trajectories}
+\end{figure}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\columnwidth]{../figures/fig3_topology.pdf}
+  \caption{Distribución de topologías por modelo Pythia con criterio robusto (profundidad $\geq 5$ pp). La línea roja indica el umbral H1 (30\%).}
+  \label{fig:topology}
+\end{figure}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.9\columnwidth]{../figures/fig2_human_alignment_160m.pdf}
+  \caption{Scatter entre el paso de estabilización de Pythia-160M y la AoA humana. Color indica confianza del mapeo. $\rho = -0{,}180$, $p = 0{,}168$, $n = 60$.}
+  \label{fig:alignment}
+\end{figure}
 
 \section{Discusión}
 \label{sec:discusion}
 
-\textit{Interpretación, limitaciones, líneas futuras (SLT/LLC, extensión a léxico/EWoK).}
+\paragraph{H1.} La prevalencia de trayectorias no monótonas ($\approx 76$--91\%) es la norma, no la excepción. Esto es consistente con Bunzeck y Zarrieß~\citeyear{bunzeck2024shapes} y confirma que el aprendizaje por gradiente descenso en corpus grandes produce fenomenología análoga a las curvas en U observadas en niños.
+
+\paragraph{H2.} La falta de correlación positiva con AoA humana tiene al menos tres interpretaciones no excluyentes: (a) el mapeo BLiMP $\to$ AoA es impreciso, especialmente para fenómenos abstractos como islas y NPI donde no hay equivalente en Wordbank; (b) el \textit{paso de estabilización} captura cuándo el modelo ``aprende'' cada paradigma pero no necesariamente en el mismo sentido que los niños; (c) Pythia entrena en corpus de adultos, no en input infantil dirigido, por lo que el curriculum implícito difiere fundamentalmente del que enfrentan los niños. Trabajo futuro debería usar modelos entrenados en CHILDES o BabyLM y un mapeo AoA basado en datos de comprensión sintáctica.
+
+\paragraph{H3.} La mayor profundidad de valles en paradigmas irregulares es compatible con la hipótesis de que el modelo aprende primero por memorización de ítems y luego integra la regularidad subyacente~\cite{marcus1992overregularization}. La diferencia ($\Delta = 0{,}119$) es sustantiva aunque no se probó formalmente su significatividad.
+
+\paragraph{Limitaciones.} (1) Evaluamos solo accuracy de pares mínimos (BLiMP), que mide conocimiento discriminativo pero no generativo. (2) El mapeo BLiMP$\leftrightarrow$AoA para fenómenos sintácticos abstractos es aproximado; 46 de 67 entradas son de baja confianza. (3) No evaluamos Zorro, que usa vocabulario más controlado y podría mostrar correlaciones más claras con Wordbank.
 
 \section{Conclusión}
 \label{sec:conclusion}
 
-\textit{Placeholder.}
+Evaluamos sistemáticamente 24 checkpoints de tres modelos Pythia sobre los 67 paradigmas de BLiMP y encontramos que la no-monotonicidad es prevalente (76--91\%), que la alineación con el orden de adquisición humana no es significativa con el mapeo actual (H2 abierta), y que los paradigmas morfológicos irregulares exhiben valles más profundos (H3 parcialmente confirmada). Este trabajo establece una metodología reproducible para estudiar la ontogenia artificial de competencias sintácticas y abre múltiples líneas de trabajo futuro: mapeo AoA basado en comprensión sintáctica, evaluación con modelos entrenados en corpus infantiles, e integración de Zorro.
 
 \section*{Limitaciones}
 
