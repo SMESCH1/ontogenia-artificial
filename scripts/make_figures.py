@@ -176,6 +176,74 @@ def plot_human_alignment_scatter(
     print(f"Saved: {out_png}  (rho={rho:.3f}, p={pval:.3f}, n={len(merged)})")
 
 
+SHAPE_COLORS = {
+    "monotonic":    "#4CAF50",
+    "u_shape":      "#F44336",
+    "non_monotone": "#FF9800",
+    "oscillatory":  "#B0BEC5",
+    "inverted_u":   "#9C27B0",
+    "single_turn":  "#795548",
+}
+
+
+def _categorize_shape(row: pd.Series) -> str:
+    """Clasifica con criterio robusto (depth>=5pp + valle antes del pico)."""
+    s = row["shape"]
+    if s == "u_shape":
+        return "u_shape"
+    if s in ("oscillatory", "inverted_u") and row["depth"] >= DEPTH_THRESHOLD and row["min_step"] < row["max_step"]:
+        return "non_monotone"
+    if s == "monotonic":
+        return "monotonic"
+    return "oscillatory"
+
+
+def plot_topology_distribution(topo: pd.DataFrame) -> None:
+    """Fig 3: distribución de topologías (criterio robusto) por modelo."""
+    sub = topo[topo["task"] != "blimp"].copy()
+    sub["shape_robust"] = sub.apply(_categorize_shape, axis=1)
+
+    category_order = ["monotonic", "u_shape", "non_monotone", "oscillatory"]
+    category_labels = {
+        "monotonic":    "Monótona",
+        "u_shape":      "Curva U",
+        "non_monotone": "No monótona\n(depth>=5pp)",
+        "oscillatory":  "Oscilatoria\n(ruido)",
+    }
+
+    counts = (
+        sub.groupby(["model_size", "shape_robust"])
+        .size()
+        .unstack(fill_value=0)
+        .reindex(columns=category_order, fill_value=0)
+    )
+    pcts = counts.div(counts.sum(axis=1), axis=0) * 100
+
+    fig, ax = plt.subplots(figsize=(7, 4))
+    bottom = np.zeros(len(MODEL_SIZES))
+    for cat in category_order:
+        vals = [pcts.loc[sz, cat] if sz in pcts.index else 0.0 for sz in MODEL_SIZES]
+        ax.bar(MODEL_SIZES, vals, bottom=bottom,
+               color=SHAPE_COLORS[cat], label=category_labels[cat], edgecolor="white")
+        bottom += np.array(vals)
+
+    ax.axhline(30, color="red", linestyle="--", linewidth=1, alpha=0.7,
+               label="Umbral H1 (30%)")
+    ax.set_ylabel("% paradigmas", fontsize=10)
+    ax.set_xlabel("Modelo Pythia", fontsize=10)
+    ax.set_title("Distribución de topologías por modelo (BLiMP, 67 paradigmas)", fontsize=10)
+    ax.legend(fontsize=7, loc="upper right", bbox_to_anchor=(1.38, 1))
+    ax.set_ylim(0, 105)
+
+    fig.tight_layout()
+    out_png = FIGURES / "fig3_topology.png"
+    out_pdf = FIGURES / "fig3_topology.pdf"
+    fig.savefig(out_png, dpi=150, bbox_inches="tight")
+    fig.savefig(out_pdf, bbox_inches="tight")
+    plt.close(fig)
+    print(f"Saved: {out_png}")
+
+
 if __name__ == "__main__":
     metrics = pd.read_parquet(RESULTS / "aggregated_metrics.parquet")
     topo = pd.read_parquet(RESULTS / "topology_summary.parquet")
@@ -184,8 +252,10 @@ if __name__ == "__main__":
     h1 = compute_h1_stats(topo)
     print("=== H1 ===")
     for sz, r in h1.items():
-        print(f"  {sz}: {r['n_nonmono']}/{r['n_total']} = {r['pct_nonmono']:.1f}% no-monotone (depth≥5pp)")
+        print(f"  {sz}: {r['n_nonmono']}/{r['n_total']} = {r['pct_nonmono']:.1f}% no-monotone (depth>=5pp)")
 
     plot_trajectories(metrics)
     for sz in MODEL_SIZES:
         plot_human_alignment_scatter(metrics, milestones, model_size=sz)
+    plot_topology_distribution(topo)
+    print("\nTodas las figuras generadas en figures/")
