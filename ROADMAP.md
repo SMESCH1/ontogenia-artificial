@@ -57,23 +57,26 @@ Detalle operacional en [`docs/04_experimental_design.md`](docs/04_experimental_d
 - [x] `results/` con naming — `smoke/{size}_step{N}_{task}.json`, `sweep/{size}_step{N}.json` (ver `CLAUDE.md` / `AGENTS.md`).
 - [x] `notebooks/02_trajectories.ipynb` operativo con `aggregated_metrics.parquet` + export `topology_summary.parquet`.
 - [x] Clasificación topológica implementada en `src/ontogenia/topology.py` + comando `ontogenia topology`.
-- [ ] **Sweep completo BLiMP** — arrancar `./scripts/run_full_sweep.sh` y dejar corriendo en GPU (~24h por modelo, ~72h total). Orden recomendado: `14m` → `160m` → `410m` para detectar problemas antes de comprometer tiempo en los modelos grandes.
-- [ ] **Post-análisis** — una vez que `results/sweep/` tenga datos: `./scripts/run_post_analysis.sh` (aggregate → parquet → topology → human-alignment).
+- [x] **Sweep completo BLiMP** — 72 archivos en `results/sweep/` (3 modelos × 24 checkpoints, sin `--limit`). Skip-existing implementado en CLI (`--force` para forzar re-run).
+- [x] **Post-análisis** — `./scripts/run_post_analysis.sh` corrido: `aggregated_metrics.parquet` (4899 filas) + `topology_summary.parquet` generados.
 - [ ] **Integrar Zorro** — portar YAML de tareas al formato de lm-eval (guía en `docs/integracion_zorro.md`); si no da el tiempo, dejarlo fuera del sweep y documentarlo como limitación.
 - [ ] Buffer para re-correr ante artefactos.
 
-**Estimación de tiempo:** ~24h por modelo en 3090/4090 para BLiMP completo. Cronometrar `14m` × `step0` × `blimp` sin `--limit` y extrapolar ×72. Contingencia: correr solo `pythia-160m-deduped` si el tiempo no alcanza (ver Plan de contingencia).
-
 ### Semana 4 (12/05 – 18/05) — Análisis + escritura
 - [x] `notebooks/03_human_correlation.ipynb` operativo + módulo `src/ontogenia/human_alignment.py` y comando `ontogenia human-alignment` (Spearman + bootstrap).
-- [ ] **Completar `data/human_milestones.csv`** a ≥15 pares (hoy tiene 10) — **bloquea H2**. Formato en `data/human_milestones.csv.example`; fuentes en `docs/05_human_alignment.md`.
-- [ ] Borrador v1 del paper (6–8 páginas): abstract, intro, related work, método, resultados, discusión. Intro + método pueden escribirse **en paralelo al sweep**, sin esperar resultados.
-- [ ] Figuras con calidad publicable (trayectorias por paradigma, scatter Pythia vs. AoA humano).
+- [x] **`data/human_milestones.csv`** completo — 67 paradigmas BLiMP con AoA (meses), fuente y confianza (4 alta / 17 media / 46 baja).
+- [x] **Paper v1** (`paper/main.tex`) — 6+ páginas, 0 placeholders, resultados reales H1/H2/H3, secciones completas.
+- [x] **Figuras publicables** — `scripts/make_figures.py`: Fig1 trayectorias (2×3), Fig2 scatter AoA×3 modelos, Fig3 distribución topologías. PNG+PDF en `figures/`.
 - [ ] **Si queda margen:** piloto de EWoK sobre el mejor Pythia identificado.
 
 ### Semana 5 (19/05 – 26/05) — Pulido + presentación
-- [ ] Revisión interna cruzada entre Sebastián, Leandro y Hugo.
-- [ ] Paper v2 (final), figuras con calidad publicable.
+
+- [x] Pipeline completo mergeado a main (sweep BLiMP, figuras, paper v1).
+- [ ] **Validar mapeo AoA** con Leandro y Hugo — 46/67 paradigmas tienen confianza "baja"; revisar especialmente los morfológicos para H3. Fuentes en `docs/05_human_alignment.md`.
+- [ ] **Bibliografía** — completar `paper/custom.bib` con BibTeX reales (Biderman 2023, Bunzeck 2024, Frank 2017, Warstadt 2020 BLiMP, Hu 2024 BabyLM, Kendiukhov 2025).
+- [ ] Instalar TeX (`sudo apt install texlive-full`) y compilar `paper/main.tex` a PDF; alternativa: Overleaf.
+- [ ] Revisión interna cruzada del paper (abstract, resultados H2 negativo, discusión).
+- [ ] Paper v2 (final) con bibliografía, figuras ajustadas post-validación AoA.
 - [ ] Slides (~15 min).
 - [ ] README reproducible con instrucciones end-to-end.
 - [ ] Tag `v1.0-presentacion` el 25/05.
