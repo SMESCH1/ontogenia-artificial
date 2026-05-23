@@ -50,3 +50,16 @@ Thumbs.db
 
 # Notas locales personales
 notas.txt
+
+# Slides generadas
+scripts/make_slides.py
+*.pptx
+
+
+.cursor/
+CLAUDE.md
+AGENTS.md
+
+
+docs/contexto/
+docs/superpowers/
