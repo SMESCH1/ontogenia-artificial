@@ -59,7 +59,7 @@ scripts/make_slides.py
 .cursor/
 CLAUDE.md
 AGENTS.md
-
+GEMINI.md
 
 docs/contexto/
 docs/superpowers/
