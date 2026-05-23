@@ -12,7 +12,8 @@ Research Project para la materia **Procesamiento de Lenguaje Natural** (UDESA, 1
 
 - **Modelo:** Suite Pythia (EleutherAI) — 154 checkpoints públicos, mismo orden exacto de datos. Variantes: `pythia-14m`, `pythia-160m`, `pythia-410m` (deduplicadas).
 - **Evaluación:** Pares mínimos sintácticos (BLiMP + Zorro) corridos vía `lm-evaluation-harness`.
-- **Métrica principal:** *Sub-linear Length Normalized Log-Probabilities* (SLLN-LP), adaptada de Bunzeck & Zarrieß 2024 y ZhoBLiMP.
+- **Métrica principal:** *Pairwise Accuracy* estándar (`acc,none`) del harness (log-probabilidades conjuntas).
+- **Métrica de robustez y control:** *Sub-linear Length Normalized Log-Probabilities* (SLLN-LP) con α = 0.5 (adaptada de Bunzeck & Zarrieß 2024), implementada a nivel de ítem para análisis de sensibilidad y control de longitud.
 - **Alineación humana:** correlación Spearman entre el orden de estabilización de paradigmas en Pythia y la edad de adquisición reportada en CHILDES / Wordbank.
 
 ## Estado
