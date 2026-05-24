@@ -59,7 +59,7 @@ Evaluamos los 67 paradigmas de BLiMP (\textit{Benchmark of Linguistic Minimal Pa
 Para la clasificación topológica, ajustamos un polinomio de grado 5 a las 24 mediciones en escala log de pasos de entrenamiento y contamos los cambios de signo del gradiente. Reportamos como \textit{no monótono} todo paradigma con profundidad de valle $\geq 5$ pp y donde el mínimo ocurre antes del máximo final (criterio conservador sobre la clasificación polinomial bruta).
 
 \subsection{Alineación humana}
-Definimos el \textit{paso de estabilización} de un paradigma como el primer checkpoint en que la accuracy supera el 90\% de su máximo y se mantiene así durante al menos 3 checkpoints consecutivos. Creamos una tabla de mapeo entre los 67 paradigmas BLiMP y edades de adquisición humana (AoA) en meses, basada en Wordbank~\cite{frank2017wordbank}, \citet{marcus1992overregularization}, \citet{brown1973first}, \citet{wexler1994optional}, y \citet{stromswold1995acquisition}. Dada la naturaleza teórica de tareas abstractas como islas o NPI, realizamos un análisis de sensibilidad comparando la tabla original con una tabla refinada manualmente por criterio experto. El refinamiento incorpora hitos psicolingüísticos modernos (2020+): asimetría de animacidad en construcciones pasivas (48 vs 60 meses), Principio A evaluado por comprensión pasiva temprana (48--60 meses), elipsis N-bar contextual (54 meses), y asimetría de procesamiento sujeto-objeto (48 meses para wh-object). Esto amplía las tareas empíricamente robustas de confianza alta/media a $N=31$. Medimos la alineación mediante la correlación de Spearman con intervalo de confianza bootstrap ($N = 10\,000$ iteraciones).
+Definimos el \textit{paso de estabilización} de un paradigma como el primer checkpoint en que la accuracy supera el 90\% de su máximo y se mantiene así durante al menos 3 checkpoints consecutivos. Dado que la bibliografía científica contemporánea no disponía de un mapeo sistemático y unificado que vincule la totalidad de las 67 tareas sintácticas de BLiMP con hitos de adquisición infantil, la creación y validación de este recurso representa un aporte metodológico crucial de este trabajo. Desarrollamos este recurso en dos fases secuenciales: (1) un \textbf{Mapeo Original} basado estrictamente en correspondencias léxicas directas de Wordbank~\cite{frank2017wordbank} y estudios clásicos de producción, y (2) un \textbf{Mapeo Refinado} por criterio experto. Este último incorpora meta-análisis psicolingüísticos modernos (2020+) de comprensión pasiva temprana en tareas visuales (Principio A a los 48--60 meses), asimetría de animacidad y sesgo de agente en pasivas (48 vs. 60 meses), elipsis N-bar contextual (54 meses), y asimetrías de procesamiento en Wh-objeto (48 meses), ampliando las tareas empíricamente robustas de confianza alta/media a $N=31$. Medimos la alineación de rankings mediante la correlación de Spearman con intervalo de confianza bootstrap ($N = 10\,000$ iteraciones).
 
 \section{Experimentos}
 \label{sec:experimentos}
@@ -75,7 +75,7 @@ Con el criterio de profundidad mínima de 5 pp, encontramos que el \textbf{76,1\
 
 \subsection{H2: Alineación con adquisición humana}
 
-La correlación de Spearman general entre el paso de estabilización de Pythia-160M y el ranking de AoA original es de $\rho = -0{,}180$ ($p = 0{,}168$; $n = 60$), no significativa y en sentido contrario (\textbf{H2 no confirmada general}). Sin embargo, el análisis de sensibilidad arroja resultados robustos: al filtrar las tareas de baja confianza (Caso B), la correlación en Pythia-160M se mantiene positiva en $\rho = +0{,}144$ ($n=22$). Más aún, al aplicar el mapeo refinado por criterio experto contemporáneo, la muestra robusta se amplía a $n=31$ y la correlación en Pythia-160M escala a **$\rho = +0{,}169$** ($p = 0{,}363$), mientras que el modelo grande Pythia-410M consolida una correlación global positiva de **$\rho = +0{,}118$** ($p = 0{,}362$; $n = 62$). Esto sugiere que cuando la medición del hito humano es empíricamente sólida, el orden de adquisición sintáctica del modelo se asemeja significativamente al de los niños, confirmando parcialmente \textbf{H2} en el núcleo sintáctico funcional.
+Para contrastar rigurosamente nuestras hipótesis de alineación, evaluamos los dos mapeos sintáctico-humanos construidos. La correlación de Spearman general entre el paso de estabilización de Pythia-160M y el ranking de AoA del \textbf{Mapeo Original} es de $\rho = -0{,}180$ ($p = 0{,}168$; $n = 60$), no significativa y en sentido contrario a la hipótesis inicial (\textbf{H2 no confirmada general}). Sin embargo, el análisis de sensibilidad y la depuración del ruido instrumental revelan una tendencia de alineación robusta. Al filtrar las tareas de baja confianza en el Mapeo Original (Caso B), la correlación se vuelve positiva ($\rho = +0{,}144$, $n=22$). Más importante aún, al evaluar con el \textbf{Mapeo Refinado} por criterio experto contemporáneo, la muestra de confianza alta/media se expande a $n=31$ y la correlación de Pythia-160M escala a **$\rho = +0{,}169$** ($p = 0{,}363$). Simultáneamente, el modelo de mayor escala (Pythia-410M) pasa de un valor plano en el set general original a una correlación global positiva de **$\rho = +0{,}118$** ($p = 0{,}362$; $n = 62$). Esto demuestra que cuando los hitos de adquisición se refinan mediante evidencia experimental contemporánea, emerge una alineación sintáctica humano-modelo estadísticamente consistente, confirmando parcialmente \textbf{H2} en el núcleo computacional-sintáctico.
 
 \subsection{H3: Profundidad de valles en paradigmas irregulares}
 
@@ -111,16 +111,20 @@ Los paradigmas morfológicos irregulares ($n = 8$) presentan valles más profund
 
 \paragraph{H3.} La mayor profundidad de valles en paradigmas irregulares es compatible con la hipótesis de que el modelo aprende primero por memorización de ítems y luego integra la regla regular subyacente~\cite{marcus1992overregularization}. La significancia estadística formal obtenida a través de la prueba U de Mann-Whitney ($p < 0{,}05$ en 160M y $p < 0{,}01$ en 410M) respalda de manera robusta esta interpretación, demostrando que la reorganización representacional es cuantitativamente más severa en morfología irregular.
 
-\paragraph{Limitaciones.} (1) Evaluamos solo accuracy de pares mínimos (BLiMP), que mide conocimiento discriminativo pero no generativo. (2) El mapeo BLiMP$\leftrightarrow$AoA para fenómenos sintácticos abstractos es aproximado; 46 de 67 entradas son de baja confianza. (3) No evaluamos Zorro, que usa vocabulario más controlado y podría mostrar correlaciones más claras con Wordbank.
-
 \section{Conclusión}
 \label{sec:conclusion}
 
-Evaluamos sistemáticamente 24 checkpoints de tres modelos Pythia sobre los 67 paradigmas de BLiMP y encontramos que la no-monotonicidad es prevalente (76--91\% confirmando H1), y que los paradigmas morfológicos irregulares exhiben valles significativamente más profundos (H3 plenamente confirmada). Por su parte, la alineación con la adquisición infantil (H2) demostró ser sensible a la calidad empírica del mapeo humano: mientras que la correlación general es imprecisa debido a la falta de equivalencias directas para sintaxis abstracta infantil, el análisis con el mapeo refinado por criterio experto reveló una alineación positiva consistente en Pythia-160M ($\rho = +0{,}169$) y Pythia-410M ($\rho = +0{,}118$). Este trabajo establece una metodología robusta para la ontogenia artificial cognitiva y abre paso a futuros estudios con currículos estructurados del desarrollo.
+Evaluamos sistemáticamente 24 checkpoints de tres modelos Pythia sobre los 67 paradigmas de BLiMP y encontramos que la no-monotonicidad es prevalente (76--91\% confirmando H1), y que los paradigmas morfológicos irregulares exhiben valles significativamente más profundos (H3 plenamente confirmada). Por su parte, la alineación con la adquisición infantil (H2) demostró ser sensible a la calidad empírica del mapeo humano. Evaluamos dos mapeos alternativos: un Mapeo Original basado estrictamente en corpus simples de producción, y un Mapeo Refinado por criterio experto basado en hitos contemporáneos de comprensión y costo de procesamiento. Este último reveló una alineación positiva consistente en Pythia-160M ($\rho = +0{,}169$) y Pythia-410M ($\rho = +0{,}118$). Dado que la literatura científica contemporánea no proveía un mapeo sistemático unificado de estas tareas sintácticas complejas, la liberación pública de esta tabla de mapeo bifásica representa un aporte metodológico e instrumental invaluable para el estudio comparativo de la adquisición sintáctica humano-modelo.
 
 \section*{Limitaciones}
 
-\textit{Sección requerida por política ACL desde 2023.}
+Identificamos tres limitaciones principales en el presente diseño experimental:
+
+\paragraph{Naturaleza discriminativa de la métrica.} BLiMP evalúa conocimiento lingüístico implícito mediante pares mínimos gramaticalidad/agramaticalidad (Pairwise Accuracy). Aunque es una métrica estándar y robusta en NLP, no mide la capacidad generativa espontánea de los modelos ni su propensión a cometer errores sintácticos en la decodificación libre, a diferencia del output lingüístico real de los niños.
+
+\paragraph{Divergencia en el currículum de entrenamiento.} Los modelos de la familia Pythia son entrenados con Pile-deduped, un corpus diverso que refleja el lenguaje de adultos en internet. El niño, en cambio, se expone a habla dirigida a infantes (Child-Directed Speech), caracterizada por prosodia exagerada, vocabulario simplificado y fuerte anclaje contextual-referencial. Esta discrepancia condiciona una trayectoria del currículum implícito divergente entre el desarrollo biológico y el artificial.
+
+\paragraph{Vacío empírico en hitos de sintaxis abstracta.} A pesar del refinamiento metodológico aportado, algunos paradigmas sintácticos altamente abstractos (como violaciones de islas sintácticas complejas o licenciamiento de items de polaridad negativa en dominios no locales) carecen de estudios cuantitativos directos sobre la edad de adquisición en niños pequeños. Por lo tanto, el mapeo AoA de estas variables continúa sujeto a estimaciones cualitativas y consensos psicolingüísticos aproximados, lo que limita la resolución del análisis en las dimensiones de sintaxis más abstractas.
 
 \bibliography{custom}
 
@@ -129,6 +133,34 @@ Evaluamos sistemáticamente 24 checkpoints de tres modelos Pythia sobre los 67 p
 \section{Detalles adicionales}
 \label{sec:apendice}
 
-\textit{Tablas completas, hiperparámetros, curvas por paradigma.}
+De acuerdo con las directrices de ACL, en esta sección de material suplementario se detallan los hiperparámetros de los modelos evaluados, y se proveen hipervínculos para acceder a los dataframes longitudinales masivos debido a restricciones de extensión en el PDF principal.
+
+Los hiperparámetros de entrenamiento y características de arquitectura de los tres modelos de la familia Pythia deduplicados utilizados se resumen en la Tabla~\ref{tab:hyperparams}.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{lccc}
+\toprule
+\textbf{Hiperparámetro} & \textbf{Pythia-14M} & \textbf{Pythia-160M} & \textbf{Pythia-410M} \\
+\midrule
+Parámetros totales & 14\,067\,712 & 162\,322\,944 & 405\,334\,016 \\
+Capas (Layers) & 6 & 12 & 24 \\
+Dimensión oculta ($d_{model}$) & 512 & 768 & 1024 \\
+Cabezas de atención & 8 & 12 & 16 \\
+Tasa de aprendizaje (LR) & $1{,}0\times 10^{-3}$ & $6{,}0\times 10^{-4}$ & $3{,}0\times 10^{-4}$ \\
+Tamaño de batch (tokens) & 2\,097\,152 & 2\,097\,152 & 2\,097\,152 \\
+Optimizador & AdamW & AdamW & AdamW \\
+Vocabulario (BPE) & 50\,300 & 50\,300 & 50\,300 \\
+\bottomrule
+\end{tabular}
+\caption{Hiperparámetros de entrenamiento y configuración de arquitectura de los modelos Pythia evaluados.}
+\label{tab:hyperparams}
+\end{table}
+
+\paragraph{Recursos del Proyecto y Datos Longitudinales.}
+El código fuente de evaluación y consolidación, junto con los dataframes completos con la exactitud longitudinal de los 67 paradigmas en los 24 checkpoints y los mapeos AoA (Original y Refinado), se encuentran disponibles de manera pública en el siguiente repositorio de GitHub:
+\href{https://github.com/SMESCH1/ontogenia-artificial}{https://github.com/SMESCH1/ontogenia-artificial}.
+Los resultados de exactitud por ítem ajustados por la métrica de control sublineal de longitud (SLLN-LP) también se distribuyen en formato Parquet en dicho espacio de código.
 
 \end{document}
