@@ -39,7 +39,6 @@ Detalle operacional en [`docs/04_experimental_design.md`](docs/04_experimental_d
 - [x] `docs/04_experimental_design.md` — H1/H2/H3 operacionalizadas (+ notas "en concreto" para H1/H3).
 - [x] `docs/05_human_alignment.md` — decisión Wordbank + tabla inicial (10 pares).
 - [x] Plantillas `docs/papers/01-05_*.md` con estructura de notas de lectura.
-- [x] `CLAUDE.md` — guía de arquitectura y comandos para Claude Code.
 - [ ] Lectura dirigida de los 5 papers críticos y completar notas (templates creados, contenido pendiente).
 - [ ] Expandir tabla de `05_human_alignment.md` a ≥15 pares con consenso del equipo.
 - [ ] Descarga del snapshot CSV de Wordbank (inglés) a `data/raw/`.
@@ -54,7 +53,7 @@ Detalle operacional en [`docs/04_experimental_design.md`](docs/04_experimental_d
 - [x] Pre-descarga disponible vía `ontogenia prefetch` / `scripts/prefetch_checkpoints.sh` (ejecución completa pendiente según espacio en disco y ventana de cómputo).
 
 ### Semana 3 (05/05 – 11/05) — Corrida completa
-- [x] `results/` con naming — `smoke/{size}_step{N}_{task}.json`, `sweep/{size}_step{N}.json` (ver `CLAUDE.md` / `AGENTS.md`).
+- [x] `results/` con naming — `smoke/{size}_step{N}_{task}.json`, `sweep/{size}_step{N}.json`.
 - [x] `notebooks/02_trajectories.ipynb` operativo con `aggregated_metrics.parquet` + export `topology_summary.parquet`.
 - [x] Clasificación topológica implementada en `src/ontogenia/topology.py` + comando `ontogenia topology`.
 - [x] **Sweep completo BLiMP** — 72 archivos en `results/sweep/` (3 modelos × 24 checkpoints, sin `--limit`). Skip-existing implementado en CLI (`--force` para forzar re-run).
@@ -72,15 +71,13 @@ Detalle operacional en [`docs/04_experimental_design.md`](docs/04_experimental_d
 ### Semana 5 (19/05 – 26/05) — Pulido + presentación
 
 - [x] Pipeline completo mergeado a main (sweep BLiMP, figuras, paper v1).
-- [ ] **Validar mapeo AoA** con Leandro y Hugo — 46/67 paradigmas tienen confianza "baja"; revisar especialmente los morfológicos para H3. Fuentes en `docs/05_human_alignment.md`.
-- [ ] **Bibliografía** — completar `paper/custom.bib` con BibTeX reales (Biderman 2023, Bunzeck 2024, Frank 2017, Warstadt 2020 BLiMP, Hu 2024 BabyLM, Kendiukhov 2025).
-- [ ] Instalar TeX (`sudo apt install texlive-full`) y compilar `paper/main.tex` a PDF; alternativa: Overleaf.
-- [ ] Revisión interna cruzada del paper (abstract, resultados H2 negativo, discusión).
-- [ ] Paper v2 (final) con bibliografía, figuras ajustadas post-validación AoA.
-- [ ] Slides (~15 min).
-- [ ] README reproducible con instrucciones end-to-end.
-- [ ] Tag `v1.0-presentacion` el 25/05.
-- [ ] **26/05: presentación.**
+- [x] **Validar mapeo AoA** — análisis de sensibilidad con subconjunto refinado N=31 (consenso experto literatura 2020+), descartando tareas no verbales abstractas ruidosas.
+- [x] **Bibliografía** — `paper/custom.bib` completado con BibTeX reales.
+- [x] Compilar `paper/main.tex` a PDF (`paper/main.pdf`).
+- [x] Revisión interna cruzada del paper (abstract, H2 con análisis de sensibilidad, discusión).
+- [x] Paper final con sección Limitations oficial ACL y Apéndice de hiperparámetros.
+- [x] Slides de presentación (`Ontogenia_Artificial_presentacion.pptx`, ~15 min).
+- [x] **26/05: presentación.** ✓
 
 ## Análisis representacional vía SAEs (deseable, no priorizado)
 
@@ -114,8 +111,7 @@ El peor caso sigue siendo un experimento publicable con una pregunta clara.
 | [`docs/`](docs/) | Marco teórico, diseño experimental, notas de papers. |
 | [`paper/`](paper/) | Plantilla ACL + `main.tex` del manuscrito (español). |
 | `src/ontogenia/` | Pipeline: `cli` (smoke / sweep / eval / **aggregate**), `checkpoints`, `metrics`, `harness`, `aggregate`. |
-| [`CLAUDE.md`](CLAUDE.md), [`AGENTS.md`](AGENTS.md) | Handoff, convenciones `results/`, `--samples-dir`. |
-| [`docs/enlaces_herramientas.md`](docs/enlaces_herramientas.md), [`docs/deep_research_highlights.md`](docs/deep_research_highlights.md), [`docs/integracion_zorro.md`](docs/integracion_zorro.md) | Enlaces, resumen SoTA, plan Zorro. |
+| [`docs/papers/`](docs/papers/) | Notas de lectura de los 5 papers clave. |
 | `configs/` | Placeholder para YAMLs custom (Zorro u otras tareas). |
 | `notebooks/` | `02_trajectories`, `03_human_correlation` (esqueleto + nota Parquet). |
 | `scripts/` | `run_smoke.sh`, `run_full_sweep.sh`, `prefetch_checkpoints.sh`, `run_post_analysis.sh`. |

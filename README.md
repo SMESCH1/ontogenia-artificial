@@ -18,35 +18,30 @@ Research Project para la materia **Procesamiento de Lenguaje Natural** (UDESA, 1
 
 ## Estado
 
-**Semanas 2–4 implementadas a nivel de pipeline/análisis** — CLI (`ontogenia smoke|sweep|eval|aggregate|prefetch|topology|human-alignment`), métricas SLLN-LP, sidecars por-ítem (`--samples-dir`), consolidación Parquet, clasificación topológica y correlación humana (Spearman + bootstrap). Lo pendiente principal es correr el sweep completo y redactar resultados finales.
+**Proyecto completo — presentado el 26/05/2026.**
 
-Ver [`docs/`](docs/) para el marco teórico, el diseño experimental y el plan semanal.
+Pipeline completo: sweep BLiMP (3 modelos × 24 checkpoints × 67 paradigmas), clasificación topológica, correlación Spearman con AoA humana, figuras publicables y paper ACL finalizado. Resultados: H1 confirmada (76–91 % paradigmas no monótonos), H2 con señal positiva en subconjunto refinado (ρ = +0.169, N=31), H3 confirmada con alta significancia (Mann-Whitney p < 0.005 en 410M).
 
 ## Estructura
 
 ```
-docs/           Marco teórico, diseño experimental, notas bibliográficas
-CLAUDE.md       Contexto compacto para agentes / retomar trabajo
-paper/          Manuscrito LaTeX (formato ACL, español)
-src/ontogenia/  Pipeline lm-eval, checkpoints Pythia, SLLN-LP
-configs/        YAMLs de tareas custom (p. ej. Zorro) cuando se integren
-notebooks/      Trayectorias y correlación humano–modelo
-scripts/        run_smoke.sh, run_full_sweep.sh, prefetch_checkpoints.sh
+docs/papers/    Notas de lectura de los 5 papers clave
+docs/slides_*   Slides de la presentación (HTML + Marp)
+paper/          Manuscrito LaTeX finalizado (formato ACL, español)
+src/ontogenia/  Pipeline: CLI, checkpoints Pythia, SLLN-LP, topología, alineación humana
+configs/        YAMLs de tareas custom para lm-evaluation-harness
+notebooks/      Trayectorias (02) y correlación humana (03)
+scripts/        run_smoke.sh, run_full_sweep.sh, run_post_analysis.sh, make_figures.py
 tests/          Tests unitarios (métricas)
-data/           Datasets humanos curados (gitignored en /raw y /processed)
-results/        JSONs de evaluación por (modelo, checkpoint) (gitignored)
+data/           human_milestones.csv (AoA refinado) + human_milestones_refined.csv
+figures/        Figuras PNG/PDF generadas para el paper
+results/        JSONs + Parquet de evaluación (gitignored)
 ```
-
-Para la fase de alineación humana, crear `data/human_milestones.csv` a partir de
-`data/human_milestones.csv.example` (columnas mínimas: `task`, `aoa_months`).
-
-## Deadline
-
-Presentación final: **26 de mayo de 2026**.
 
 ## Autores
 
-Por completar.
+Sebastián Mesch Henriques, Leandro Miguel Carcagno, Hugo Alejandro Cabaña.
+Materia NLP — UDESA, 1er semestre 2026 (prof. Luciano Del Corro).
 
 ## Referencias clave
 

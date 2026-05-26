@@ -54,6 +54,7 @@ notas.txt
 # Slides generadas
 scripts/make_slides.py
 *.pptx
+!Ontogenia_Artificial_presentacion.pptx
 
 
 .cursor/
