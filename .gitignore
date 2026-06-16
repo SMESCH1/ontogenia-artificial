@@ -63,4 +63,16 @@ AGENTS.md
 GEMINI.md
 
 docs/contexto/
+docs/contexto.zip
 docs/superpowers/
+
+# Material de cátedra / contexto interno (no publicar)
+docs/resumen_proyecto.md
+docs/clase_introduccion_mia_udesa_1_2026.pptx.pdf
+*.docx
+
+# Exploraciones locales (no parte del pipeline reproducible)
+scratch/
+
+# PDFs en raíz (el paper compilado vive en paper/main.pdf)
+/*.pdf

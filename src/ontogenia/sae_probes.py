@@ -22,9 +22,6 @@ Ver docs/06_sae_representational_probes.md para el workflow completo.
 
 from __future__ import annotations
 
-from typing import Optional
-
-import numpy as np
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
@@ -50,7 +47,7 @@ def _require_sparsify() -> None:
         )
 
 
-def load_sae(model_name: str, layer: int) -> "Sae":
+def load_sae(model_name: str, layer: int) -> Sae:
     """
     Carga el SAE pre-entrenado de EleutherAI para un modelo Pythia y capa dados.
 
@@ -72,7 +69,7 @@ def load_sae(model_name: str, layer: int) -> "Sae":
 def extract_activations(
     sentences: list[str],
     model_hf_name: str,
-    revision: Optional[str],
+    revision: str | None,
     layer: int,
     device: str = "cuda",
     batch_size: int = 16,
@@ -128,7 +125,7 @@ def extract_activations(
 
 def get_feature_activations(
     activations: torch.Tensor,
-    sae: "Sae",
+    sae: Sae,
 ) -> torch.Tensor:
     """
     Proyecta activaciones a través del SAE y devuelve el vector de features sparse.
@@ -143,7 +140,7 @@ def get_feature_activations(
 def contrastive_features(
     grammatical_acts: torch.Tensor,
     ungrammatical_acts: torch.Tensor,
-    sae: "Sae",
+    sae: Sae,
     top_k: int = 20,
 ) -> list[tuple[int, float]]:
     """
@@ -168,7 +165,7 @@ def track_features_across_checkpoints(
     model_short_name: str,
     checkpoints: list[str],
     layer: int,
-    top_features: Optional[list[int]] = None,
+    top_features: list[int] | None = None,
     device: str = "cuda",
 ) -> dict:
     """
