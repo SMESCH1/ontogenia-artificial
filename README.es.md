@@ -2,6 +2,11 @@
 
 🌐 **Idioma:** [English](README.md) · **Español**
 
+[![CI](https://github.com/SMESCH1/ontogenia-artificial/actions/workflows/ci.yml/badge.svg)](https://github.com/SMESCH1/ontogenia-artificial/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Paper](https://img.shields.io/badge/paper-PDF-b31b1b.svg)](paper/main.pdf)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](pyproject.toml)
+
 **Evaluación longitudinal de la emergencia sintáctica en Pythia y su alineación con la adquisición humana del lenguaje.**
 
 Research Project para la materia **Procesamiento de Lenguaje Natural** (UDESA, 1er semestre 2026, Luciano Del Corro).
@@ -71,10 +76,11 @@ results/        JSONs + Parquet de evaluación (gitignored)
 
 Ver [`ROADMAP.md`](ROADMAP.md) y [`docs/04_experimental_design.md`](docs/04_experimental_design.md) para las hipótesis operacionalizadas.
 
-## Autores
+## Autores y contribuciones
 
-Sebastián Mesch Henriques, Leandro Miguel Carcagno, Hugo Alejandro Cabaña.
-Materia NLP — UDESA, 1er semestre 2026 (prof. Luciano Del Corro).
+Proyecto de investigación grupal de **Sebastián Mesch Henriques**, Leandro Miguel Carcagno y Hugo Alejandro Cabaña — materia NLP, UDESA, 1er semestre 2026 (prof. Luciano Del Corro).
+
+**Mi rol (Sebastián Mesch Henriques):** diseñé e implementé todo el pipeline de evaluación y el repositorio — sweep de checkpoints sobre la suite Pythia vía `lm-evaluation-harness`, la métrica SLLN-LP y la capa de agregación, el clasificador topológico y el análisis de alineación humana (Spearman + bootstrap), las figuras publicables y el diseño experimental. El encuadre de investigación, el mapeo de edad de adquisición humana y el paper se desarrollaron de forma colaborativa con el equipo.
 
 ## Referencias clave
 

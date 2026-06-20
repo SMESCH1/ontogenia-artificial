@@ -2,6 +2,11 @@
 
 🌐 **Language:** **English** · [Español](README.es.md)
 
+[![CI](https://github.com/SMESCH1/ontogenia-artificial/actions/workflows/ci.yml/badge.svg)](https://github.com/SMESCH1/ontogenia-artificial/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Paper](https://img.shields.io/badge/paper-PDF-b31b1b.svg)](paper/main.pdf)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](pyproject.toml)
+
 **A longitudinal study of syntactic emergence in Pythia and its alignment with human language acquisition.**
 
 Research project for the **Natural Language Processing** course (Universidad de San Andrés, 1st semester 2026, Luciano Del Corro). The full paper is written in Spanish in ACL format.
@@ -101,10 +106,11 @@ results/        Evaluation JSON + Parquet (gitignored)
 
 Full bibliography in [`docs/deep-research.md`](docs/deep-research.md).
 
-## Authors
+## Authors & contributions
 
-Sebastián Mesch Henriques, Leandro Miguel Carcagno, Hugo Alejandro Cabaña.
-NLP course — UDESA, 1st semester 2026 (instructor: Luciano Del Corro).
+Group research project by **Sebastián Mesch Henriques**, Leandro Miguel Carcagno, and Hugo Alejandro Cabaña — NLP course, UDESA, 1st semester 2026 (instructor: Luciano Del Corro).
+
+**My role (Sebastián Mesch Henriques):** designed and implemented the full evaluation pipeline and repository — checkpoint sweep over the Pythia suite via `lm-evaluation-harness`, the SLLN-LP metric and aggregation layer, the topology classifier and the human-alignment (Spearman + bootstrap) analysis, the publication figures, and the experimental design. The research framing, human age-of-acquisition mapping, and paper were developed collaboratively with the team.
 
 ## License
 

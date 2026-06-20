@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it as below."
+title: "Artificial Ontogeny: Syntactic emergence in Pythia and its alignment with human language acquisition"
+abstract: >-
+  A longitudinal study of syntactic acquisition in the Pythia model suite across
+  pre-training checkpoints, evaluated on BLiMP/Zorro minimal pairs, testing for
+  non-monotonic (U-shaped) learning curves and ordinal alignment with human age
+  of acquisition (Wordbank/CHILDES).
+type: software
+authors:
+  - family-names: "Mesch Henriques"
+    given-names: "Sebastián"
+  - family-names: "Carcagno"
+    given-names: "Leandro Miguel"
+  - family-names: "Cabaña"
+    given-names: "Hugo Alejandro"
+date-released: 2026-05-26
+license: MIT
+repository-code: "https://github.com/SMESCH1/ontogenia-artificial"
+keywords:
+  - natural language processing
+  - interpretability
+  - language acquisition
+  - psycholinguistics
+  - pythia
+  - developmental interpretability
